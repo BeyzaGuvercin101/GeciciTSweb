@@ -1,0 +1,182 @@
+﻿using System;
+using System.Collections.Generic;
+using GeciciTSweb.Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore;
+using Console = GeciciTSweb.Infrastructure.Entities.Console;
+
+namespace GeciciTSweb.Infrastructure.Data;
+
+public partial class GeciciTSwebDbContext : DbContext
+{
+    public GeciciTSwebDbContext(DbContextOptions<GeciciTSwebDbContext> options)
+        : base(options)
+    {
+    }
+
+    public virtual DbSet<Company> Companies { get; set; }
+
+    public virtual DbSet<Console> Consoles { get; set; }
+
+    public virtual DbSet<Department> Departments { get; set; }
+
+    public virtual DbSet<MaintenanceRequest> MaintenanceRequests { get; set; }
+
+    public virtual DbSet<RequestLog> RequestLogs { get; set; }
+
+    public virtual DbSet<Role> Roles { get; set; }
+
+    public virtual DbSet<TemporaryMaintenanceType> TemporaryMaintenanceTypes { get; set; }
+
+    public virtual DbSet<Unit> Units { get; set; }
+
+    public virtual DbSet<User> Users { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Company>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Companie__3214EC073959A46A");
+
+            entity.HasIndex(e => e.Name, "UQ__Companie__737584F6CA932090").IsUnique();
+
+            entity.Property(e => e.Name).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<Console>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Consoles__3214EC07A63A1752");
+
+            entity.Property(e => e.Name).HasMaxLength(100);
+
+            entity.HasOne(d => d.Company).WithMany(p => p.Consoles)
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Consoles_Companies");
+        });
+
+        modelBuilder.Entity<Department>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Departme__3214EC07A2A86B95");
+
+            entity.HasIndex(e => e.Name, "UQ__Departme__737584F6406427AA").IsUnique();
+
+            entity.Property(e => e.Name).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<MaintenanceRequest>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Maintena__3214EC078FF3FC46");
+
+            entity.HasIndex(e => e.Status, "IX_MaintenanceRequests_Status");
+
+            entity.HasIndex(e => e.UnitId, "IX_MaintenanceRequests_UnitId");
+
+            entity.Property(e => e.BildirimNumarasi).HasMaxLength(50);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.EquipmentNumber).HasMaxLength(100);
+            entity.Property(e => e.Fluid).HasMaxLength(100);
+            entity.Property(e => e.Pressure).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.Temperature).HasColumnType("decimal(10, 2)");
+
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.MaintenanceRequests)
+                .HasForeignKey(d => d.CreatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Requests_Users");
+
+            entity.HasOne(d => d.TempMaintenanceType).WithMany(p => p.MaintenanceRequests)
+                .HasForeignKey(d => d.TempMaintenanceTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Requests_TempTypes");
+
+            entity.HasOne(d => d.Unit).WithMany(p => p.MaintenanceRequests)
+                .HasForeignKey(d => d.UnitId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Requests_Units");
+        });
+
+        modelBuilder.Entity<RequestLog>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__RequestL__3214EC07D80ED5FE");
+
+            entity.HasIndex(e => e.MaintenanceRequestId, "IX_RequestLogs_MaintenanceRequestId");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.LogType).HasMaxLength(50);
+            entity.Property(e => e.Reason).HasMaxLength(255);
+
+            entity.HasOne(d => d.AuthorUser).WithMany(p => p.RequestLogs)
+                .HasForeignKey(d => d.AuthorUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Logs_Users");
+
+            entity.HasOne(d => d.MaintenanceRequest).WithMany(p => p.RequestLogs)
+                .HasForeignKey(d => d.MaintenanceRequestId)
+                .HasConstraintName("FK_Logs_Requests");
+        });
+
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Roles__3214EC077D37D0F8");
+
+            entity.HasIndex(e => e.Name, "UQ__Roles__737584F681DB7990").IsUnique();
+
+            entity.Property(e => e.Name).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<TemporaryMaintenanceType>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Temporar__3214EC07F1735B53");
+
+            entity.HasIndex(e => e.Name, "UQ__Temporar__737584F6F5DC19E1").IsUnique();
+
+            entity.Property(e => e.Name).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<Unit>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Units__3214EC071FDEC016");
+
+            entity.Property(e => e.Name).HasMaxLength(100);
+
+            entity.HasOne(d => d.Console).WithMany(p => p.Units)
+                .HasForeignKey(d => d.ConsoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Units_Consoles");
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Users__3214EC07FFC1274F");
+
+            entity.HasIndex(e => e.KeycloakUserId, "UQ__Users__DB57BA592BBC46D2").IsUnique();
+
+            entity.Property(e => e.KeycloakUserId).HasMaxLength(100);
+
+            entity.HasOne(d => d.Department).WithMany(p => p.Users)
+                .HasForeignKey(d => d.DepartmentId)
+                .HasConstraintName("FK_Users_Departments");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.Users)
+                .HasForeignKey(d => d.RoleId)
+                .HasConstraintName("FK_Users_Roles");
+
+        });
+        modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
+        modelBuilder.Entity<Company>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<Console>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<Department>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<MaintenanceRequest>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<RequestLog>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<Role>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<TemporaryMaintenanceType>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<Unit>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<User>().HasQueryFilter(e => !e.IsDeleted);
+
+
+        OnModelCreatingPartial(modelBuilder);
+    }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+}
