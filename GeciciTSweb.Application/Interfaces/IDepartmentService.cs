@@ -9,7 +9,9 @@ namespace GeciciTSweb.Application.Interfaces
 {
     public interface IDepartmentService
     {
-        Task<List<DepartmentListDto>> GetAllAsync();
-        Task<DepartmentListDto> CreateAsync(CreateDepartmentDto dto);
+        Task<List<DepartmentListDto>> GetAllAsync();            
+        Task<DepartmentListDto> CreateAsync(CreateDepartmentDto dto);   
+
     }
 }
+    

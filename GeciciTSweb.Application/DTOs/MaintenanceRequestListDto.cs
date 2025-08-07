@@ -15,8 +15,7 @@ namespace GeciciTSweb.Application.DTOs
         public string Status { get; set; } = null!;
         public bool IsClosed { get; set; }
         public DateTime CreatedAt { get; set; }
-        public MaintenanceWorkflowStatus WorkflowStatus { get; set; } // Enum ile bağlanacak
-
+        
 
     }
 }

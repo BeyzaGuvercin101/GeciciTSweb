@@ -33,6 +33,7 @@ public partial class MaintenanceRequest
     public DateTime? UpdatedAt { get; set; }
 
     public bool IsDeleted { get; set; } = false;
+    public virtual Unit Unit { get; set; } = null;
 
     public virtual User CreatedByUser { get; set; } = null!;
 
@@ -40,7 +41,6 @@ public partial class MaintenanceRequest
 
     public virtual TemporaryMaintenanceType TempMaintenanceType { get; set; } = null!;
 
-    public virtual Unit Unit { get; set; } = null!;
     
-
+    
 }

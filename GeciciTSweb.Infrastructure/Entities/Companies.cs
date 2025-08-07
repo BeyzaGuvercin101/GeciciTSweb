@@ -3,17 +3,13 @@ using System.Collections.Generic;
 
 namespace GeciciTSweb.Infrastructure.Entities;
 
-public partial class Console
+public partial class Companies
 {
     public int Id { get; set; }
 
     public string Name { get; set; } = null!;
-
-    public int CompanyId { get; set; }
     public bool IsDeleted { get; set; }= false;
 
 
-    public virtual Companies Company { get; set; } = null!;
-
-    public virtual ICollection<Unit> Units { get; set; } = new List<Unit>();
+    public virtual ICollection<Console> Consoles { get; set; } = new List<Console>();
 }

@@ -15,8 +15,8 @@ namespace GeciciTSweb.Application.Mapper
         public MappingProfile()
         {
             // Company
-            CreateMap<Company, CompanyListDto>().ReverseMap();
-            CreateMap<Company, CreateCompanyDto>().ReverseMap();
+            CreateMap<Companies, CompaniesListDto>().ReverseMap();
+            CreateMap<Companies, CreateCompaniesDto>().ReverseMap();
 
             // Console
             CreateMap<Infrastructure.Entities.Console, ConsoleListDto>().ReverseMap();
@@ -40,19 +40,20 @@ namespace GeciciTSweb.Application.Mapper
             // TemporaryMaintenanceType
             CreateMap<TemporaryMaintenanceType, TemporaryMaintenanceTypeListDto>().ReverseMap();
             CreateMap<TemporaryMaintenanceType, CreateTemporaryMaintenanceTypeDto>().ReverseMap();
+            
+            CreateMap<CreateMaintenanceRequestDto, MaintenanceRequest>();
+            CreateMap<MaintenanceRequest, MaintenanceRequestDetailDto>();
+            CreateMap<MaintenanceRequest, MaintenanceRequestListDto>();
+            CreateMap<MaintenanceRequest, MaintenanceRequestDto>()
+    .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.UnitId))
+    .ForMember(dest => dest.TempMaintenanceTypeName, opt => opt.MapFrom(src => src.TempMaintenanceType.Name));
 
 
-            // MaintenanceRequest
-            CreateMap<MaintenanceRequest, MaintenanceRequestListDto>()
-                .ForMember(dest => dest.WorkflowStatus, opt => opt.MapFrom(src =>
-                    Enum.Parse<MaintenanceWorkflowStatus>(src.Status)))
-                .ReverseMap()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
-                    src.WorkflowStatus.ToString()));
+            CreateMap<UpdateMaintenanceRequestDto, MaintenanceRequest>()
+    .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
 
-            CreateMap<MaintenanceRequest, MaintenanceRequestDetailDto>().ReverseMap();
-            CreateMap<MaintenanceRequest, CreateMaintenanceRequestDto>().ReverseMap();
-            CreateMap<MaintenanceRequest, UpdateMaintenanceRequestDto>().ReverseMap();
+            CreateMap<MaintenanceRequest, UpdateMaintenanceRequestDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Enum.Parse<MaintenanceWorkflowStatus>(src.Status)));
 
             // RequestLog
             CreateMap<RequestLog, RequestLogDto>().ReverseMap();

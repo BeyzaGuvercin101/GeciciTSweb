@@ -30,7 +30,7 @@ namespace GeciciTSweb.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateCompanyDto dto)
+        public async Task<IActionResult> Create(CreateCompaniesDto dto)
         {
             var id = await _companyService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id }, null);

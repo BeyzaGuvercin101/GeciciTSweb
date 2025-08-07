@@ -13,7 +13,7 @@ public partial class GeciciTSwebDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Company> Companies { get; set; }
+    public virtual DbSet<Companies> Companies { get; set; }
 
     public virtual DbSet<Console> Consoles { get; set; }
 
@@ -33,7 +33,7 @@ public partial class GeciciTSwebDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Company>(entity =>
+        modelBuilder.Entity<Companies>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Companie__3214EC073959A46A");
 
@@ -89,10 +89,12 @@ public partial class GeciciTSwebDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Requests_TempTypes");
 
-            entity.HasOne(d => d.Unit).WithMany(p => p.MaintenanceRequests)
-                .HasForeignKey(d => d.UnitId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Requests_Units");
+            entity.HasOne(d => d.Unit) 
+      .WithMany(p => p.MaintenanceRequests)
+      .HasForeignKey(d => d.UnitId)
+      .OnDelete(DeleteBehavior.ClientSetNull)
+      .HasConstraintName("FK_Requests_Units");
+
         });
 
         modelBuilder.Entity<RequestLog>(entity =>
@@ -163,7 +165,7 @@ public partial class GeciciTSwebDbContext : DbContext
 
         });
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
-        modelBuilder.Entity<Company>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<Companies>().HasQueryFilter(e => !e.IsDeleted);
         modelBuilder.Entity<Console>().HasQueryFilter(e => !e.IsDeleted);
         modelBuilder.Entity<Department>().HasQueryFilter(e => !e.IsDeleted);
         modelBuilder.Entity<MaintenanceRequest>().HasQueryFilter(e => !e.IsDeleted);

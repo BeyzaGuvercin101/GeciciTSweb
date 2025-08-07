@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GeciciTSweb.Application.DTOs
 {
-    public class DepartmentListDto
+    public class CompaniesListDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;

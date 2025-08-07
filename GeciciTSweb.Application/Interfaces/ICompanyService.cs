@@ -9,8 +9,8 @@ namespace GeciciTSweb.Application.Interfaces
 {
     public interface ICompanyService
     {
-        Task<List<CompanyListDto>> GetAllAsync();
-        Task<CompanyListDto> GetByIdAsync(int id);
-        Task<int> CreateAsync(CreateCompanyDto dto);
+        Task<List<CompaniesListDto>> GetAllAsync();
+        Task<CompaniesListDto> GetByIdAsync(int id);
+        Task<int> CreateAsync(CreateCompaniesDto dto);
     }
 }

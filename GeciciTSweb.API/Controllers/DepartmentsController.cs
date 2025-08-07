@@ -19,7 +19,7 @@ namespace GeciciTSweb.API.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _service.GetAllAsync();
-            return Ok(result);
+            return Ok(result);  
         }
 
         [HttpPost]

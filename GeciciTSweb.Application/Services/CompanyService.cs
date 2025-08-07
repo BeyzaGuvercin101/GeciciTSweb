@@ -24,24 +24,24 @@ namespace GeciciTSweb.Application.Services
             _context = context;
         }
 
-        public async Task<List<CompanyListDto>> GetAllAsync()
+        public async Task<List<CompaniesListDto>> GetAllAsync()
         {
             var companies = await _context.Companies.ToListAsync();
-            return _mapper.Map<List<CompanyListDto>>(companies);
+            return _mapper.Map<List<CompaniesListDto>>(companies);
         }
 
-        public async Task<CompanyListDto> GetByIdAsync(int id)
+        public async Task<CompaniesListDto> GetByIdAsync(int id)
         {
             var company = await _context.Companies.FindAsync(id);
             if (company == null)
                 throw new Exception("Şirket bulunamadı.");
 
-            return _mapper.Map<CompanyListDto>(company);
+            return _mapper.Map<CompaniesListDto>(company);
         }
 
-        public async Task<int> CreateAsync(CreateCompanyDto dto)
+        public async Task<int> CreateAsync(CreateCompaniesDto dto)
         {
-            var entity = _mapper.Map<Company>(dto);
+            var entity = _mapper.Map<Companies>(dto);
             _context.Companies.Add(entity);
             await _context.SaveChangesAsync();
             return entity.Id;

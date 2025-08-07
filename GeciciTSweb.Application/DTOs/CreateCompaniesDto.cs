@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace GeciciTSweb.Application.DTOs
 {
-    public class DepartmentListDto
+    public class CreateCompaniesDto
     {
-        public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public bool IsDeleted { get; set; } = false;
+        public string IsDeleted { get; set; } = "false"; // Default value is false, can be changed later
     }
+
 }

@@ -32,7 +32,7 @@ namespace GeciciTSweb.API.Controllers
         }
 
         [HttpPost(Name = "PostTest")]
-        public IEnumerable<CompanyListDto> Post(CreateCompanyDto s)
+        public IEnumerable<CompaniesListDto> Post(CreateCompaniesDto s)
         {
             return null;
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GeciciTSweb.Application.DTOs
 {
-    public class MaintenanceRequestDetailDto
+    public class MaintenanceRequestDto
     {
         public int Id { get; set; }
         public int UnitId { get; set; }
@@ -22,6 +22,9 @@ namespace GeciciTSweb.Application.DTOs
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
+        // Optional display fields (mapping is required)
+        public string UnitName { get; set; } = string.Empty;
+        public string TempMaintenanceTypeName { get; set; } = string.Empty;
     }
-
 }
+
