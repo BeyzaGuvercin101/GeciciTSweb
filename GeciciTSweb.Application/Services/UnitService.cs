@@ -56,7 +56,6 @@ namespace GeciciTSweb.Application.Services
         {
             var unit = await _context.Units.FindAsync(id);
             if (unit == null || unit.IsDeleted) return false;
-
             unit.IsDeleted = true;
             await _context.SaveChangesAsync();
             return true;

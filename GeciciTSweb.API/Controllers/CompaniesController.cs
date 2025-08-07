@@ -6,7 +6,7 @@ namespace GeciciTSweb.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CompaniesController : Controller
+    public class CompaniesController : ControllerBase
     {
         private readonly ICompanyService _companyService;
 

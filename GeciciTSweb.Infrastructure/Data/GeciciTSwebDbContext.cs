@@ -90,10 +90,10 @@ public partial class GeciciTSwebDbContext : DbContext
                 .HasConstraintName("FK_Requests_TempTypes");
 
             entity.HasOne(d => d.Unit) 
-      .WithMany(p => p.MaintenanceRequests)
-      .HasForeignKey(d => d.UnitId)
-      .OnDelete(DeleteBehavior.ClientSetNull)
-      .HasConstraintName("FK_Requests_Units");
+            .WithMany(p => p.MaintenanceRequests)
+            .HasForeignKey(d => d.UnitId)
+            .OnDelete(DeleteBehavior.ClientSetNull)
+            .HasConstraintName("FK_Requests_Units");
 
         });
 

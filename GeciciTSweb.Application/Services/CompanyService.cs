@@ -26,13 +26,16 @@ namespace GeciciTSweb.Application.Services
 
         public async Task<List<CompaniesListDto>> GetAllAsync()
         {
-            var companies = await _context.Companies.ToListAsync();
+            var companies = await _context.Companies
+                .Where(c => !c.IsDeleted)
+                .ToListAsync();
             return _mapper.Map<List<CompaniesListDto>>(companies);
         }
 
         public async Task<CompaniesListDto> GetByIdAsync(int id)
         {
-            var company = await _context.Companies.FindAsync(id);
+            var company = await _context.Companies
+                .FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted);
             if (company == null)
                 throw new Exception("Şirket bulunamadı.");
 

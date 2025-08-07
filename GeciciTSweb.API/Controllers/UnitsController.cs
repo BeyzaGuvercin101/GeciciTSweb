@@ -6,7 +6,7 @@ namespace GeciciTSweb.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UnitsController : ControllerBase
+    public class UnitsController : Controller
     {
         private readonly IUnitService _unitService;
 
