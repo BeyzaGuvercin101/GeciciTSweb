@@ -34,7 +34,9 @@ namespace GeciciTSweb.Application.Mapper
             CreateMap<User, CreateUserDto>().ReverseMap();
 
             // Unit
-            CreateMap<Unit, UnitListDto>().ReverseMap();
+            CreateMap<Unit, UnitListDto>()
+                .ForMember(dest => dest.ConsoleName, opt => opt.MapFrom(src => src.Console.Name))
+                .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Console.Company.Name));
             CreateMap<Unit, CreateUnitDto>().ReverseMap();
 
             // TemporaryMaintenanceType
@@ -45,7 +47,7 @@ namespace GeciciTSweb.Application.Mapper
             CreateMap<MaintenanceRequest, MaintenanceRequestDetailDto>();
             CreateMap<MaintenanceRequest, MaintenanceRequestListDto>();
             CreateMap<MaintenanceRequest, MaintenanceRequestDto>()
-    .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.UnitId))
+    .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.Unit.Name))
     .ForMember(dest => dest.TempMaintenanceTypeName, opt => opt.MapFrom(src => src.TempMaintenanceType.Name));
 
 

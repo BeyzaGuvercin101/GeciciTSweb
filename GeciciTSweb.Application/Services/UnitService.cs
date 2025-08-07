@@ -26,6 +26,8 @@ namespace GeciciTSweb.Application.Services
         public async Task<List<UnitListDto>> GetAllAsync()
         {
             var units = await _context.Units
+                .Include(u => u.Console)
+                    .ThenInclude(c => c.Company)
                 .Where(u => !u.IsDeleted)
                 .ToListAsync();
             return _mapper.Map<List<UnitListDto>>(units);
@@ -33,8 +35,11 @@ namespace GeciciTSweb.Application.Services
 
         public async Task<UnitListDto> GetByIdAsync(int id)
         {
-            var unit = await _context.Units.FindAsync(id);
-            return unit == null || unit.IsDeleted
+            var unit = await _context.Units
+                .Include(u => u.Console)
+                    .ThenInclude(c => c.Company)
+                .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
+            return unit == null
                 ? throw new Exception("Unit not found")
                 : _mapper.Map<UnitListDto>(unit);
         }

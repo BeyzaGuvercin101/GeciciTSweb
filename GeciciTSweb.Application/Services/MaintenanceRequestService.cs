@@ -1,19 +1,11 @@
 ﻿using GeciciTSweb.Application.DTOs;
 using GeciciTSweb.Application.Helpers;
+using GeciciTSweb.Application.Interfaces;
 using AutoMapper;
 using GeciciTSweb.Domain.Enums;
 using GeciciTSweb.Infrastructure.Data;
 using GeciciTSweb.Infrastructure.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GeciciTSweb.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using GeciciTSweb.Application.DTOs;
-using GeciciTSweb.Domain.Enums;
-using GeciciTSweb.Infrastructure.Entities;
 
 public class MaintenanceRequestService : IMaintenanceRequestService
 {
@@ -56,8 +48,9 @@ public class MaintenanceRequestService : IMaintenanceRequestService
     public async Task<MaintenanceRequestDto?> GetByIdAsync(int id)
     {
         var entity = await _context.MaintenanceRequests
-            .Include(x => x.UnitId)
+            .Include(x => x.Unit)
             .Include(x => x.TempMaintenanceType)
+            .Include(x => x.CreatedByUser)
             .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
 
         return entity == null ? null : _mapper.Map<MaintenanceRequestDto>(entity);
@@ -76,13 +69,14 @@ public class MaintenanceRequestService : IMaintenanceRequestService
     public async Task<IEnumerable<MaintenanceRequestListDto>> GetAllAsync()
     {
         var entities = await _context.MaintenanceRequests
-            //.Include(x => x.Unit)
+            .Include(x => x.Unit)
+                .ThenInclude(u => u.Console)
+                    .ThenInclude(c => c.Company)
             .Include(x => x.TempMaintenanceType)
+            .Include(x => x.CreatedByUser)
             .Where(x => !x.IsDeleted)
             .ToListAsync();
 
-        // Geri dönüş tipini IEnumerable olarak değiştiriyoruz.
-        // AutoMapper bu dönüşümü sorunsuz bir şekilde yapar.
         return _mapper.Map<IEnumerable<MaintenanceRequestListDto>>(entities);
     }
 

@@ -1,4 +1,5 @@
 ﻿using GeciciTSweb.Application.DTOs;
+using GeciciTSweb.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GeciciTSweb.API.Controllers
