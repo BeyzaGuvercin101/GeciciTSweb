@@ -18,10 +18,18 @@ namespace GeciciTSweb.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int? companyId = null)
         {
-            var consoles = await _consoleService.GetAllAsync();
-            return Ok(consoles);
+            if (companyId.HasValue)
+            {
+                var consoles = await _consoleService.GetByCompanyIdAsync(companyId.Value);
+                return Ok(consoles);
+            }
+            else
+            {
+                var consoles = await _consoleService.GetAllAsync();
+                return Ok(consoles);
+            }
         }
 
         [HttpGet("{id}")]

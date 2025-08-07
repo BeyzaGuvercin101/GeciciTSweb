@@ -9,10 +9,12 @@ namespace GeciciTSweb.API.Controllers
     public class MaintenanceRequestsController : ControllerBase
     {
         private readonly IMaintenanceRequestService _service;
+        private readonly IDashboardService _dashboardService;
 
-        public MaintenanceRequestsController(IMaintenanceRequestService service)
+        public MaintenanceRequestsController(IMaintenanceRequestService service, IDashboardService dashboardService)
         {
             _service = service;
+            _dashboardService = dashboardService;
         }
 
         [HttpPost]
@@ -46,12 +48,26 @@ namespace GeciciTSweb.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("statistics")]
+        public async Task<IActionResult> GetStatistics()
+        {
+            var result = await _dashboardService.GetCardStatisticsAsync();
+            return Ok(result);
+        }
 
+        [HttpGet("statistics/openform-by-company")]
+        public async Task<IActionResult> GetOpenFormsByCompany()
+        {
+            // Bu method'u DashboardService'e ekleyeceğiz
+            return Ok(new { message = "To be implemented" });
+        }
 
-
-
-
-
+        [HttpGet("statistics/closedform-by-company")]
+        public async Task<IActionResult> GetClosedFormsByCompany()
+        {
+            // Bu method'u DashboardService'e ekleyeceğiz
+            return Ok(new { message = "To be implemented" });
+        }
     }
 
 }

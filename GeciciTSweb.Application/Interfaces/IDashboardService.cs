@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using GeciciTSweb.Application.DTOs;
 
 
-namespace GeciciTSweb.Application.Services.Interfaces
+namespace GeciciTSweb.Application.Interfaces
 {
     public interface IDashboardService
     {

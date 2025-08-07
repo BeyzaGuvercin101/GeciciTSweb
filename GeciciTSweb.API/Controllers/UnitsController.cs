@@ -16,7 +16,19 @@ namespace GeciciTSweb.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _unitService.GetAllAsync());
+        public async Task<IActionResult> GetAll([FromQuery] int? consoleId = null)
+        {
+            if (consoleId.HasValue)
+            {
+                var units = await _unitService.GetByConsoleIdAsync(consoleId.Value);
+                return Ok(units);
+            }
+            else
+            {
+                var units = await _unitService.GetAllAsync();
+                return Ok(units);
+            }
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id) => Ok(await _unitService.GetByIdAsync(id));

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using GeciciTSweb.Application.DTOs;
 using GeciciTSweb.Application.Interfaces;
-using GeciciTSweb.Infrastructure.Data;
+using GeciciTSweb.Infrastructure.Interfaces;
 using GeciciTSweb.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,29 +16,26 @@ namespace GeciciTSweb.Application.Services
 {
     public class DepartmentService : IDepartmentService
     {
-        private readonly GeciciTSwebDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public DepartmentService(GeciciTSwebDbContext context, IMapper mapper)
+        public DepartmentService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<List<DepartmentListDto>> GetAllAsync()
         {
-            var departments = await _context.Departments
-                .Where(x => !x.IsDeleted)
-                .ToListAsync();
-
+            var departments = await _unitOfWork.Departments.FindAsync(x => !x.IsDeleted);
             return _mapper.Map<List<DepartmentListDto>>(departments);
         }
 
         public async Task<DepartmentListDto> CreateAsync(CreateDepartmentDto dto)
         {
             var entity = _mapper.Map<Department>(dto);
-            _context.Departments.Add(entity);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.Departments.AddAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<DepartmentListDto>(entity);
         }
     }

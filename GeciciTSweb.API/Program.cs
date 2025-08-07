@@ -1,22 +1,20 @@
 using AutoMapper;
-using GeciciTSweb.Application.DTOs;
-
 using GeciciTSweb.Application.Interfaces;
 using GeciciTSweb.Application.Mapper;
 using GeciciTSweb.Application.Services;
-using GeciciTSweb.Application.Services.Interfaces;
+using GeciciTSweb.Infrastructure.Interfaces;
 using GeciciTSweb.Infrastructure.Data;
+using GeciciTSweb.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json.Serialization;
 
-
-
-
 var builder = WebApplication.CreateBuilder(args);
+
+// Database Context
 builder.Services.AddDbContext<GeciciTSwebDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Controllers with JSON options
 builder.Services
     .AddControllers()
     .AddJsonOptions(options =>
@@ -24,40 +22,31 @@ builder.Services
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
-// Add services to the container.
-// Program.cs içinde
+// Repository Pattern
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-
-
-builder.Services.AddControllers();
+// Application Services
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IConsoleService, ConsoleService>();
+builder.Services.AddScoped<IUnitService, UnitService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ITemporaryMaintenanceTypeService, TemporaryMaintenanceTypeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMaintenanceRequestService, MaintenanceRequestService>();
-builder.Services.AddScoped<IDepartmentService, DepartmentService>();
-builder.Services.AddScoped<IUnitService, UnitService>();
+builder.Services.AddScoped<IRequestLogService, RequestLogService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
-
-// Program.cs içinde
-
+// AutoMapper
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<MappingProfile>();
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAutoMapper(cfg =>
-{
-    cfg.AddProfile<GeciciTSweb.Application.Mapper.MappingProfile>();
-});
-builder.Services.AddScoped<IConsoleService, ConsoleService>();
-builder.Services.AddScoped<IUnitService, UnitService>();
-builder.Services.AddScoped<ICompanyService, CompanyService>();
-builder.Services.AddScoped<IDashboardService, DashboardService>();
-
-
-
-
-
 
 var app = builder.Build();
 

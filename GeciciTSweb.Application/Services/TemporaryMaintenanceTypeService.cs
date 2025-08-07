@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using GeciciTSweb.Application.DTOs;
 using GeciciTSweb.Application.Interfaces;
-using GeciciTSweb.Infrastructure.Data;
+using GeciciTSweb.Infrastructure.Interfaces;
 using GeciciTSweb.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,27 +14,24 @@ namespace GeciciTSweb.Application.Services
 {
     public class TemporaryMaintenanceTypeService : ITemporaryMaintenanceTypeService
     {
-        private readonly GeciciTSwebDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public TemporaryMaintenanceTypeService(GeciciTSwebDbContext context, IMapper mapper)
+        public TemporaryMaintenanceTypeService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<List<TemporaryMaintenanceTypeListDto>> GetAllAsync()
         {
-            var types = await _context.TemporaryMaintenanceTypes
-                .Where(x => !x.IsDeleted)
-                .ToListAsync();
-
+            var types = await _unitOfWork.TemporaryMaintenanceTypes.FindAsync(x => !x.IsDeleted);
             return _mapper.Map<List<TemporaryMaintenanceTypeListDto>>(types);
         }
 
         public async Task<TemporaryMaintenanceTypeListDto> GetByIdAsync(int id)
         {
-            var type = await _context.TemporaryMaintenanceTypes
+            var type = await _unitOfWork.TemporaryMaintenanceTypes
                 .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
 
             if (type == null)
@@ -46,8 +43,8 @@ namespace GeciciTSweb.Application.Services
         public async Task<int> CreateAsync(CreateTemporaryMaintenanceTypeDto dto)
         {
             var entity = _mapper.Map<TemporaryMaintenanceType>(dto);
-            _context.TemporaryMaintenanceTypes.Add(entity);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.TemporaryMaintenanceTypes.AddAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
             return entity.Id;
         }
     }

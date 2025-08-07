@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using GeciciTSweb.Application.DTOs;
 using GeciciTSweb.Application.Interfaces;
-using GeciciTSweb.Infrastructure.Data;
+using GeciciTSweb.Infrastructure.Interfaces;
 using GeciciTSweb.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,25 +16,23 @@ namespace GeciciTSweb.Application.Services
     public class CompanyService : ICompanyService
     {
         private readonly IMapper _mapper;
-        private readonly GeciciTSwebDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CompanyService(IMapper mapper, GeciciTSwebDbContext context)
+        public CompanyService(IMapper mapper, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<CompaniesListDto>> GetAllAsync()
         {
-            var companies = await _context.Companies
-                .Where(c => !c.IsDeleted)
-                .ToListAsync();
+            var companies = await _unitOfWork.Companies.FindAsync(c => !c.IsDeleted);
             return _mapper.Map<List<CompaniesListDto>>(companies);
         }
 
         public async Task<CompaniesListDto> GetByIdAsync(int id)
         {
-            var company = await _context.Companies
+            var company = await _unitOfWork.Companies
                 .FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted);
             if (company == null)
                 throw new Exception("Şirket bulunamadı.");
@@ -45,8 +43,8 @@ namespace GeciciTSweb.Application.Services
         public async Task<int> CreateAsync(CreateCompaniesDto dto)
         {
             var entity = _mapper.Map<Companies>(dto);
-            _context.Companies.Add(entity);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.Companies.AddAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
             return entity.Id;
         }
     }

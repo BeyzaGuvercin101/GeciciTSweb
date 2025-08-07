@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using GeciciTSweb.Application.DTOs;
 using GeciciTSweb.Application.Interfaces;
-using GeciciTSweb.Infrastructure.Data;
+using GeciciTSweb.Infrastructure.Interfaces;
 using GeciciTSweb.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,23 +16,23 @@ namespace GeciciTSweb.Application.Services
     public class RoleService : IRoleService
     {
         private readonly IMapper _mapper;
-        private readonly GeciciTSwebDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RoleService(IMapper mapper, GeciciTSwebDbContext context)
+        public RoleService(IMapper mapper, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<RoleListDto>> GetAllAsync()
         {
-            var roles = await _context.Roles.Where(x => !x.IsDeleted).ToListAsync();
+            var roles = await _unitOfWork.Roles.FindAsync(x => !x.IsDeleted);
             return _mapper.Map<List<RoleListDto>>(roles);
         }
 
         public async Task<RoleListDto> GetByIdAsync(int id)
         {
-            var role = await _context.Roles.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+            var role = await _unitOfWork.Roles.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
             if (role == null)
                 throw new Exception("Rol bulunamadı.");
 
@@ -42,8 +42,8 @@ namespace GeciciTSweb.Application.Services
         public async Task<int> CreateAsync(CreateRoleDto dto)
         {
             var role = _mapper.Map<Role>(dto);
-            _context.Roles.Add(role);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.Roles.AddAsync(role);
+            await _unitOfWork.SaveChangesAsync();
             return role.Id;
         }
     }

@@ -10,6 +10,7 @@ namespace GeciciTSweb.Application.Interfaces
     public interface IConsoleService
     {
         Task<List<ConsoleListDto>> GetAllAsync();
+        Task<List<ConsoleListDto>> GetByCompanyIdAsync(int companyId);
         Task<ConsoleListDto> GetByIdAsync(int id);
         Task<int> CreateAsync(CreateConsoleDto dto);
     }

@@ -1,6 +1,6 @@
 ﻿using GeciciTSweb.Application.DTOs;
-using GeciciTSweb.Application.Services.Interfaces;
-using GeciciTSweb.Infrastructure.Data;
+using GeciciTSweb.Application.Interfaces;
+using GeciciTSweb.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,18 +13,16 @@ namespace GeciciTSweb.Application.Services
 {
     public class DashboardService : IDashboardService
     {
-        private readonly GeciciTSwebDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DashboardService(GeciciTSwebDbContext context)
+        public DashboardService(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<DashboardCardDto> GetCardStatisticsAsync()
         {
-            var requests = await _context.MaintenanceRequests
-                                         .Where(x => !x.IsDeleted)
-                                         .ToListAsync();
+            var requests = await _unitOfWork.MaintenanceRequests.FindAsync(x => !x.IsDeleted);
 
             var result = new DashboardCardDto
             {
