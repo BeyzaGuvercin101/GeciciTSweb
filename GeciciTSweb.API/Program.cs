@@ -51,13 +51,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Seed the database
-if (app.Environment.IsDevelopment())
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        await GeciciTSweb.Infrastructure.Data.DataSeeder.SeedAsync(scope.ServiceProvider);
-    }
-}
+// DataSeeder removed - using existing database data
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

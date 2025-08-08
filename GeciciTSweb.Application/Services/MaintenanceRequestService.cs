@@ -46,6 +46,52 @@ public class MaintenanceRequestService : IMaintenanceRequestService
         await _unitOfWork.SaveChangesAsync();
         return true;
     }
+
+    public async Task<bool> PatchAsync(PatchMaintenanceRequestDto dto)
+    {
+        var entity = await _unitOfWork.MaintenanceRequests.GetByIdAsync(dto.Id);
+        if (entity == null || entity.IsDeleted) return false;
+
+        // Sadece null olmayan alanları güncelle (PATCH semantiği)
+        if (!string.IsNullOrEmpty(dto.BildirimNumarasi))
+            entity.BildirimNumarasi = dto.BildirimNumarasi;
+        
+        if (!string.IsNullOrEmpty(dto.EquipmentNumber))
+            entity.EquipmentNumber = dto.EquipmentNumber;
+        
+        if (dto.TempMaintenanceTypeId.HasValue)
+            entity.TempMaintenanceTypeId = dto.TempMaintenanceTypeId.Value;
+        
+        if (dto.Temperature.HasValue)
+            entity.Temperature = dto.Temperature.Value;
+        
+        if (dto.Pressure.HasValue)
+            entity.Pressure = dto.Pressure.Value;
+        
+        if (!string.IsNullOrEmpty(dto.Fluid))
+            entity.Fluid = dto.Fluid;
+
+        entity.UpdatedAt = DateTime.Now;
+
+        // Eğer güncelleme sebebi varsa RequestLog'a kaydet
+        if (!string.IsNullOrEmpty(dto.UpdateReason))
+        {
+            var requestLog = new RequestLog
+            {
+                MaintenanceRequestId = entity.Id,
+                AuthorUserId = entity.CreatedByUserId, // Geçici olarak, gerçekte current user olmalı
+                LogType = "PartialUpdate",
+                Reason = dto.UpdateReason,
+                CreatedAt = DateTime.Now
+            };
+            await _unitOfWork.RequestLogs.AddAsync(requestLog);
+        }
+
+        _unitOfWork.MaintenanceRequests.Update(entity);
+        await _unitOfWork.SaveChangesAsync();
+        return true;
+    }
+
     public async Task<MaintenanceRequestDto?> GetByIdAsync(int id)
     {
         var entity = await _unitOfWork.MaintenanceRequests.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);

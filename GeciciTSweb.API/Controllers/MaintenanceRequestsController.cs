@@ -32,6 +32,17 @@ namespace GeciciTSweb.API.Controllers
             return success ? NoContent() : NotFound();
         }
 
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Patch(int id, PatchMaintenanceRequestDto dto)
+        {
+            if (id != dto.Id) return BadRequest("ID mismatch");
+            
+            var success = await _service.PatchAsync(dto);
+            if (!success) return NotFound("Maintenance request not found");
+
+            return NoContent(); // 204 No Content - PATCH başarılı
+        }
+
        
         [HttpGet]
         public async Task<IActionResult> GetAll()
