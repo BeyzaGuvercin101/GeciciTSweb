@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace GeciciTSweb.Application.DTOs
+namespace GeciciTSweb.Application.DTOs;
+
+public class CreateRequestLogDto
 {
-    public class CreateRequestLogDto
-    {
-        public int MaintenanceRequestId { get; set; }
-        public string LogType { get; set; } = null!;
-        public string? Reason { get; set; }
-        public string? Comment { get; set; }
-        public string? Description { get; set; }
-    }
+    [Required]
+    public int MaintenanceRequestId { get; set; }
+
+    [Required]
+    [MaxLength(50)]
+    public string ActionType { get; set; } = null!; // "Onay", "Red", "Geri Gönder", "İptal"
+
+    [MaxLength(1000)]
+    public string? ActionNote { get; set; } // Nedeni / mesajı
 }

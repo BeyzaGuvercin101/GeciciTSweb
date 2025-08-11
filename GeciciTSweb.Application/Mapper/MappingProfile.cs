@@ -22,21 +22,20 @@ namespace GeciciTSweb.Application.Mapper
             CreateMap<Infrastructure.Entities.Console, ConsoleListDto>().ReverseMap();
             CreateMap<Infrastructure.Entities.Console, CreateConsoleDto>().ReverseMap();
 
-            // Department
-            CreateMap<Department, DepartmentListDto>().ReverseMap();
-            CreateMap<Department, CreateDepartmentDto>().ReverseMap();
+            // Risk Assessment mappings
+            CreateMap<IntegrityRiskAssessment, RiskAssessmentListDto>();
+            CreateMap<CreateIntegrityRiskAssessmentDto, IntegrityRiskAssessment>();
 
-            // Role
-            CreateMap<Role, RoleListDto>().ReverseMap();
-            CreateMap<Role, CreateRoleDto>().ReverseMap();
-            // User
-            CreateMap<User, UserListDto>().ReverseMap();
-            CreateMap<User, CreateUserDto>().ReverseMap();
+            CreateMap<MaintenanceRiskAssessment, RiskAssessmentListDto>();
+            CreateMap<CreateMaintenanceRiskAssessmentDto, MaintenanceRiskAssessment>();
+
+            CreateMap<ProductionRiskAssessment, RiskAssessmentListDto>();
+            CreateMap<CreateProductionRiskAssessmentDto, ProductionRiskAssessment>();
 
             // Unit
             CreateMap<Unit, UnitListDto>()
-                .ForMember(dest => dest.ConsoleName, opt => opt.MapFrom(src => src.Console.Name))
-                .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Console.Company.Name));
+                .ForMember(dest => dest.ConsoleName, opt => opt.MapFrom(src => src.Console != null ? src.Console.Name : string.Empty))
+                .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Console != null && src.Console.Company != null ? src.Console.Company.Name : string.Empty));
             CreateMap<Unit, CreateUnitDto>().ReverseMap();
 
             // TemporaryMaintenanceType

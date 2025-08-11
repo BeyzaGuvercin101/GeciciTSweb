@@ -1,12 +1,13 @@
 ﻿using GeciciTSweb.Application.DTOs;
 using GeciciTSweb.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GeciciTSweb.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UnitsController : Controller
+    public class UnitsController : ControllerBase
     {
         private readonly IUnitService _unitService;
 
@@ -16,6 +17,7 @@ namespace GeciciTSweb.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous] // Test için geçici
         public async Task<IActionResult> GetAll([FromQuery] int? consoleId = null)
         {
             if (consoleId.HasValue)

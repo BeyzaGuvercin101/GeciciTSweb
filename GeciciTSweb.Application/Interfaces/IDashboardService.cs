@@ -12,5 +12,6 @@ namespace GeciciTSweb.Application.Interfaces
     public interface IDashboardService
     {
         Task<DashboardCardDto> GetCardStatisticsAsync();
+        Task<DashboardStatsDto> GetDetailedStatisticsAsync();
     }
 }

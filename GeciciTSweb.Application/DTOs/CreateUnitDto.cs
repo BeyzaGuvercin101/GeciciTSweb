@@ -9,6 +9,6 @@ namespace GeciciTSweb.Application.DTOs
     public class CreateUnitDto
     {
         public string Name { get; set; } = null!;
-        public int ConsoleId { get; set; }
+        public int? ConsoleId { get; set; }
     }
 }

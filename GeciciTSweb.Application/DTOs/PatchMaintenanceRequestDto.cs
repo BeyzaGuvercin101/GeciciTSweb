@@ -22,3 +22,4 @@ namespace GeciciTSweb.Application.DTOs
         public string? UpdateReason { get; set; }
     }
 }
+

@@ -1,5 +1,6 @@
 ﻿using GeciciTSweb.Application.DTOs;
 using GeciciTSweb.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GeciciTSweb.API.Controllers
@@ -16,6 +17,7 @@ namespace GeciciTSweb.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous] // Test için geçici
         public async Task<IActionResult> GetAll()
         {
             var result = await _companyService.GetAllAsync();
@@ -30,10 +32,29 @@ namespace GeciciTSweb.API.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous] // Test için geçici
         public async Task<IActionResult> Create(CreateCompaniesDto dto)
         {
-            var id = await _companyService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id }, null);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                var id = await _companyService.CreateAsync(dto);
+                return CreatedAtAction(nameof(GetById), new { id }, null);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _companyService.SoftDeleteAsync(id);
+            if (!result) return NotFound();
+            return NoContent();
         }
     }
 }

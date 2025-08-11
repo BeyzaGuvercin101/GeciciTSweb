@@ -42,11 +42,37 @@ namespace GeciciTSweb.Application.Services
 
         public async Task<int> CreateAsync(CreateCompaniesDto dto)
         {
-            var entity = _mapper.Map<Companies>(dto);
-            await _unitOfWork.Companies.AddAsync(entity);
+            try
+            {
+                // Aynı isimde şirket var mı kontrol et
+                var existingCompany = await _unitOfWork.Companies
+                    .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.Name.ToLower() && !c.IsDeleted);
+                
+                if (existingCompany != null)
+                {
+                    throw new InvalidOperationException($"'{dto.Name}' isimli şirket zaten mevcut.");
+                }
+
+                var entity = _mapper.Map<Companies>(dto);
+                await _unitOfWork.Companies.AddAsync(entity);
+                await _unitOfWork.SaveChangesAsync();
+                return entity.Id;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Şirket oluşturulurken hata oluştu: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<bool> SoftDeleteAsync(int id)
+        {
+            var company = await _unitOfWork.Companies.GetByIdAsync(id);
+            if (company == null || company.IsDeleted) return false;
+
+            company.IsDeleted = true;
+            _unitOfWork.Companies.Update(company);
             await _unitOfWork.SaveChangesAsync();
-            return entity.Id;
+            return true;
         }
     }
-
 }

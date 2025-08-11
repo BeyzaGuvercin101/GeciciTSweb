@@ -1,29 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GeciciTSweb.Infrastructure.Entities;
 
 public partial class RequestLog
 {
     public int Id { get; set; }
-    public bool IsDeleted { get; set; } = false;
 
-
+    [Required]
     public int MaintenanceRequestId { get; set; }
 
-    public int AuthorUserId { get; set; }
+    [Required]
+    [MaxLength(50)]
+    public string ActionType { get; set; } = null!; // "Onay", "Red", "Geri Gönder", "İptal"
 
-    public string LogType { get; set; } = null!;
+    [MaxLength(1000)]
+    public string? ActionNote { get; set; } // Nedeni / mesajı
 
-    public string? Reason { get; set; }
-
-    public string? Comment { get; set; }
-
-    public string? Description { get; set; }
+    [Required]
+    public int AuthorUserId { get; set; } // İşlemi yapan kullanıcı
 
     public DateTime CreatedAt { get; set; }
 
-    public virtual User AuthorUser { get; set; } = null!;
+    public bool IsDeleted { get; set; } = false;
 
+    // Navigation Properties
     public virtual MaintenanceRequest MaintenanceRequest { get; set; } = null!;
+    public virtual User AuthorUser { get; set; } = null!;
 }

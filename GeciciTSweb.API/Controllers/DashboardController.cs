@@ -1,4 +1,5 @@
 ﻿using GeciciTSweb.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GeciciTSweb.API.Controllers
@@ -15,10 +16,26 @@ namespace GeciciTSweb.API.Controllers
         }
 
         [HttpGet("cards")]
+        [AllowAnonymous] // Test için geçici
         public async Task<IActionResult> GetCardStats()
         {
             var result = await _dashboardService.GetCardStatisticsAsync();
             return Ok(result);
+        }
+
+        [HttpGet("detailed-stats")]
+        [AllowAnonymous] // Test için geçici
+        public async Task<IActionResult> GetDetailedStats()
+        {
+            try
+            {
+                var result = await _dashboardService.GetDetailedStatisticsAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
     }
 }

@@ -11,9 +11,9 @@ public partial class Unit
 
     public string Name { get; set; } = null!;
 
-    public int ConsoleId { get; set; }
+    public int? ConsoleId { get; set; }
 
-    public virtual Console Console { get; set; } = null!;
+    public virtual Console? Console { get; set; }
 
     public virtual ICollection<MaintenanceRequest> MaintenanceRequests { get; set; } = new List<MaintenanceRequest>();
 }
