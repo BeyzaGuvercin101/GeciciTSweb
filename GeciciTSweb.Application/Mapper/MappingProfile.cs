@@ -21,11 +21,6 @@ namespace GeciciTSweb.Application.Mapper
             // Console
             CreateMap<Infrastructure.Entities.Console, ConsoleListDto>().ReverseMap();
             CreateMap<Infrastructure.Entities.Console, CreateConsoleDto>().ReverseMap();
-
-            // Risk Assessment mappings (unified)
-            CreateMap<RiskAssessment, RiskAssessmentDto>()
-                .ForMember(dest => dest.CreatedByUsername, opt => opt.MapFrom(src => src.CreatedByUser.Username))
-                .ForMember(dest => dest.ApprovedByUsername, opt => opt.MapFrom(src => src.ApprovedByUser != null ? src.ApprovedByUser.Username : null));
             
             CreateMap<CreateRiskAssessmentDto, RiskAssessment>();
             CreateMap<UpdateRiskAssessmentDto, RiskAssessment>()
@@ -47,8 +42,7 @@ namespace GeciciTSweb.Application.Mapper
                 .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.Unit.Name))
                 .ForMember(dest => dest.ConsoleName, opt => opt.MapFrom(src => src.Unit.Console != null ? src.Unit.Console.Name : string.Empty))
                 .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Unit.Console != null && src.Unit.Console.Company != null ? src.Unit.Console.Company.Name : string.Empty))
-                .ForMember(dest => dest.TempMaintenanceTypeName, opt => opt.MapFrom(src => src.TempMaintenanceType.Name))
-                .ForMember(dest => dest.CreatedByUsername, opt => opt.MapFrom(src => src.CreatedByUser.Username));
+                .ForMember(dest => dest.TempMaintenanceTypeName, opt => opt.MapFrom(src => src.TempMaintenanceType.Name));
             
             CreateMap<MaintenanceRequest, MaintenanceRequestListDto>()
                 .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.Unit.Name))
@@ -66,6 +60,9 @@ namespace GeciciTSweb.Application.Mapper
             CreateMap<UpdateMaintenanceRequestDto, MaintenanceRequest>();
 
             CreateMap<MaintenanceRequest, UpdateMaintenanceRequestDto>();
+            CreateMap<RiskAssessment, RiskAssessmentDto>().ReverseMap();
+
+
 
             
         }

@@ -7,6 +7,7 @@ namespace GeciciTSweb.Infrastructure.Entities;
 
 public partial class RiskAssessment
 {
+    [Key]
     public int Id { get; set; }
 
     [Required]
@@ -18,7 +19,7 @@ public partial class RiskAssessment
 
     [Required]
     [MaxLength(30)]
-    public string DepartmentStatus { get; set; } = Domain.Enums.DepartmentStatus.Degerlendirme;
+    public string DepartmentStatus { get; set; }
 
     [MaxLength(500)]
     public string? ReturnReasonCode { get; set; }
@@ -45,7 +46,6 @@ public partial class RiskAssessment
     [Range(1, 10)]
     public int? CurrentImpact { get; set; }
 
-    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public int? CurrentRPN { get; set; } // CurrentProbability * CurrentImpact
 
     [Range(1, 10)]
@@ -54,7 +54,6 @@ public partial class RiskAssessment
     [Range(1, 10)]
     public int? ResidualImpact { get; set; }
 
-    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public int? ResidualRPN { get; set; } // ResidualProbability * ResidualImpact
 
     [MaxLength(500)]
@@ -77,9 +76,8 @@ public partial class RiskAssessment
     public bool IsDeleted { get; set; } = false;
 
     // Navigation Properties
-    public virtual MaintenanceRequest MaintenanceRequest { get; set; } = null!;
-    public virtual User CreatedByUser { get; set; } = null!;
-    public virtual User? ApprovedByUser { get; set; }
+    [ForeignKey("MaintenanceRequestId")]
+    public virtual MaintenanceRequest MaintenanceRequest { get; set; }
 
     // Helper method to calculate RPN
     public void CalculateRPN()

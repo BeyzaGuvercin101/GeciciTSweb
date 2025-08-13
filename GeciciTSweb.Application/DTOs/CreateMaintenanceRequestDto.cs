@@ -9,7 +9,7 @@ public class CreateMaintenanceRequestDto
 
     [Required]
     [MaxLength(50)]
-    public string BildirimNumarasi { get; set; } = null!;
+    public string NotificationNumber { get; set; } = null!;
 
     [Required]
     [MaxLength(100)]

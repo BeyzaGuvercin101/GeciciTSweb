@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GeciciTSweb.Infrastructure.Entities;
 
@@ -12,8 +13,8 @@ public partial class Console
     public int CompanyId { get; set; }
     public bool IsDeleted { get; set; }= false;
 
+    [ForeignKey("CompanyId")]
+    public virtual Companies Company { get; set; }
 
-    public virtual Companies Company { get; set; } = null!;
-
-    public virtual ICollection<Unit> Units { get; set; } = new List<Unit>();
+    public virtual ICollection<Unit> Units { get; set; }
 }

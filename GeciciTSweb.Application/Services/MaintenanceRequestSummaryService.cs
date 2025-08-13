@@ -25,11 +25,7 @@ namespace GeciciTSweb.Application.Services
                     .ThenInclude(u => u.Console)
                         .ThenInclude(c => c.Company)
                 .Include(mr => mr.TempMaintenanceType)
-                .Include(mr => mr.CreatedByUser)
-                .Include(mr => mr.RiskAssessments)
-                    .ThenInclude(ra => ra.CreatedByUser)
-                .Include(mr => mr.RiskAssessments)
-                    .ThenInclude(ra => ra.ApprovedByUser)
+                .Include(mr => mr.RiskAssessment)
                 .FirstOrDefaultAsync(mr => mr.Id == maintenanceRequestId);
 
             if (maintenanceRequest == null)
@@ -101,7 +97,7 @@ namespace GeciciTSweb.Application.Services
             // Create department summaries for all three departments
             foreach (DepartmentCode deptCode in Enum.GetValues<DepartmentCode>())
             {
-                var riskAssessment = maintenanceRequest.RiskAssessments
+                var riskAssessment = maintenanceRequest.RiskAssessment
                     .FirstOrDefault(ra => ra.DepartmentCode == (int)deptCode);
 
                 var deptSummary = new DepartmentSummaryDto
@@ -114,11 +110,6 @@ namespace GeciciTSweb.Application.Services
                     PlannedPermanentRepairDate = riskAssessment?.PlannedPermanentRepairDate,
                     ReturnReasonText = riskAssessment?.ReturnReasonText,
                     CancelReasonText = riskAssessment?.CancelReasonText,
-                    ApprovedBy = riskAssessment?.ApprovedByUser != null ? new UserDto 
-                    { 
-                        Id = riskAssessment.ApprovedByUser.Id, 
-                        Username = riskAssessment.ApprovedByUser.Username 
-                    } : null,
                     ApprovedAt = riskAssessment?.ApprovedAt
                 };
 

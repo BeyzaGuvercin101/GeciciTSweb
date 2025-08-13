@@ -11,7 +11,7 @@ namespace GeciciTSweb.Application.DTOs
     {
         public int Id { get; set; }
         public int UnitId { get; set; }
-        public string BildirimNumarasi { get; set; } = null!;
+        public string NotificationNumber { get; set; } = null!;
         public string EquipmentNumber { get; set; } = null!;
         public int TempMaintenanceTypeId { get; set; }
         public decimal? Temperature { get; set; }

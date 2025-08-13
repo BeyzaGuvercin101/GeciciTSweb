@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GeciciTSweb.Infrastructure.Entities;
 
@@ -13,7 +14,8 @@ public partial class Unit
 
     public int? ConsoleId { get; set; }
 
+    [ForeignKey("ConsoleId")]
     public virtual Console? Console { get; set; }
 
-    public virtual ICollection<MaintenanceRequest> MaintenanceRequests { get; set; } = new List<MaintenanceRequest>();
+    public virtual ICollection<MaintenanceRequest> MaintenanceRequests { get; set; }
 }

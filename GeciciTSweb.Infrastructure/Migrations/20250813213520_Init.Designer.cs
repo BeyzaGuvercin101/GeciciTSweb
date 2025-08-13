@@ -4,6 +4,7 @@ using GeciciTSweb.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GeciciTSweb.Infrastructure.Migrations
 {
     [DbContext(typeof(GeciciTSwebDbContext))]
-    partial class GeciciTSwebDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250813213520_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,6 +171,7 @@ namespace GeciciTSweb.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("CurrentRPN")
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("int");
 
                     b.Property<int>("DepartmentCode")
@@ -205,6 +209,7 @@ namespace GeciciTSweb.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("ResidualRPN")
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("int");
 
                     b.Property<string>("ReturnReasonCode")

@@ -22,8 +22,6 @@ namespace GeciciTSweb.Application.Services
         public async Task<RiskAssessmentDto?> GetByMaintenanceRequestAndDepartmentAsync(int maintenanceRequestId, DepartmentCode departmentCode)
         {
             var riskAssessment = await _context.RiskAssessments
-                .Include(r => r.CreatedByUser)
-                .Include(r => r.ApprovedByUser)
                 .FirstOrDefaultAsync(r => r.MaintenanceRequestId == maintenanceRequestId && 
                                          r.DepartmentCode == (int)departmentCode);
 
@@ -37,16 +35,19 @@ namespace GeciciTSweb.Application.Services
                 .FirstOrDefaultAsync(r => r.MaintenanceRequestId == dto.MaintenanceRequestId && 
                                          r.DepartmentCode == dto.DepartmentCode);
             
-            if (existing != null)
-            {
-                throw new InvalidOperationException($"Risk assessment already exists for MaintenanceRequest {dto.MaintenanceRequestId} and Department {dto.DepartmentCode}");
-            }
+            //if (existing != null)
+            //{
+            //    throw new InvalidOperationException($"Risk assessment already exists for MaintenanceRequest {dto.MaintenanceRequestId} and Department {dto.DepartmentCode}");
+            //}
 
             var riskAssessment = _mapper.Map<RiskAssessment>(dto);
             riskAssessment.CreatedAt = DateTime.UtcNow;
+            riskAssessment.DepartmentStatus = DepartmentStatus.Onaylandi;
             
             // Calculate RPN values
-            riskAssessment.CalculateRPN();
+            //riskAssessment.CalculateRPN();
+            riskAssessment.CurrentRPN = riskAssessment.CurrentProbability * riskAssessment.CurrentImpact;
+            riskAssessment.ResidualRPN = riskAssessment.ResidualProbability * riskAssessment.ResidualImpact;
 
             _context.RiskAssessments.Add(riskAssessment);
             await _context.SaveChangesAsync();
@@ -67,9 +68,12 @@ namespace GeciciTSweb.Application.Services
 
             _mapper.Map(dto, riskAssessment);
             riskAssessment.UpdatedAt = DateTime.UtcNow;
-            
+
             // Calculate RPN values
-            riskAssessment.CalculateRPN();
+            //riskAssessment.CalculateRPN();
+            riskAssessment.CurrentRPN = riskAssessment.CurrentProbability * riskAssessment.CurrentImpact;
+            riskAssessment.ResidualRPN = riskAssessment.ResidualProbability * riskAssessment.ResidualImpact;
+
 
             await _context.SaveChangesAsync();
 

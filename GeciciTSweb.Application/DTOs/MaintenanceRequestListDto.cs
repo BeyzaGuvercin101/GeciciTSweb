@@ -11,7 +11,7 @@ namespace GeciciTSweb.Application.DTOs
     public class MaintenanceRequestListDto
     {
         public int Id { get; set; }
-        public string BildirimNumarasi { get; set; } = null!;
+        public string NotificationNumber { get; set; } = null!;
         public MaintenanceWorkflowStatus Status { get; set; }
         public bool IsClosed { get; set; }
         public DateTime CreatedAt { get; set; }

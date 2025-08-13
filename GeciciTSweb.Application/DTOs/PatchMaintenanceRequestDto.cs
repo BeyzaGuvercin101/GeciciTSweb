@@ -11,7 +11,7 @@ namespace GeciciTSweb.Application.DTOs
         public int Id { get; set; }
         
         // Genel Bilgiler - Üretim ekibinin güncelleyebileceği alanlar
-        public string? BildirimNumarasi { get; set; }
+        public string? NotificationNumber { get; set; }
         public string? EquipmentNumber { get; set; }
         public int? TempMaintenanceTypeId { get; set; }
         public decimal? Temperature { get; set; }

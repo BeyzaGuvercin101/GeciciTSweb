@@ -93,8 +93,8 @@ public class MaintenanceRequestService : IMaintenanceRequestService
             throw new UnauthorizedAccessException("Bu kaydı güncelleme yetkiniz yok.");
 
         // Sadece null olmayan alanları güncelle (PATCH semantiği)
-        if (!string.IsNullOrEmpty(dto.BildirimNumarasi))
-            entity.BildirimNumarasi = dto.BildirimNumarasi;
+        if (!string.IsNullOrEmpty(dto.NotificationNumber))
+            entity.NotificationNumber = dto.NotificationNumber;
         
         if (!string.IsNullOrEmpty(dto.EquipmentNumber))
             entity.EquipmentNumber = dto.EquipmentNumber;

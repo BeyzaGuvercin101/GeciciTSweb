@@ -11,5 +11,5 @@ public partial class Companies
     public bool IsDeleted { get; set; }= false;
 
 
-    public virtual ICollection<Console> Consoles { get; set; } = new List<Console>();
+    public virtual ICollection<Console> Consoles { get; set; }
 }

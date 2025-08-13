@@ -10,5 +10,5 @@ public partial class TemporaryMaintenanceType
 
     public string Name { get; set; } = null!;
 
-    public virtual ICollection<MaintenanceRequest> MaintenanceRequests { get; set; } = new List<MaintenanceRequest>();
+    public virtual ICollection<MaintenanceRequest> MaintenanceRequests { get; set; }
 }

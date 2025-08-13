@@ -8,6 +8,7 @@ namespace GeciciTSweb.Infrastructure.Entities;
 
 public partial class MaintenanceRequest
 {
+    [Key]
     public int Id { get; set; }
 
     [Required]
@@ -15,7 +16,7 @@ public partial class MaintenanceRequest
 
     [Required]
     [MaxLength(50)]
-    public string BildirimNumarasi { get; set; } = null!;
+    public string NotificationNumber { get; set; } = null!;
 
     [Required]
     [MaxLength(100)]
@@ -46,9 +47,10 @@ public partial class MaintenanceRequest
     public bool IsDeleted { get; set; } = false;
 
     // Navigation Properties
-    public virtual Unit Unit { get; set; } = null!;
-    public virtual TemporaryMaintenanceType TempMaintenanceType { get; set; } = null!;
-    public virtual User CreatedByUser { get; set; } = null!;
+    [ForeignKey("UnitId")]
+    public virtual Unit Unit { get; set; }
+    [ForeignKey("TempMaintenanceTypeId")]
+    public virtual TemporaryMaintenanceType TempMaintenanceType { get; set; }
     
-    public virtual ICollection<RiskAssessment> RiskAssessments { get; set; } = new List<RiskAssessment>();
+    public virtual ICollection<RiskAssessment> RiskAssessment { get; set; }
 }
