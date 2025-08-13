@@ -10,12 +10,9 @@ namespace GeciciTSweb.Infrastructure.Interfaces
         IRepository<Companies> Companies { get; }
         IRepository<Console> Consoles { get; }
         IRepository<MaintenanceRequest> MaintenanceRequests { get; }
-        IRepository<RequestLog> RequestLogs { get; }
         IRepository<TemporaryMaintenanceType> TemporaryMaintenanceTypes { get; }
         IRepository<Unit> Units { get; }
-        IRepository<IntegrityRiskAssessment> IntegrityRiskAssessments { get; }
-        IRepository<MaintenanceRiskAssessment> MaintenanceRiskAssessments { get; }
-        IRepository<ProductionRiskAssessment> ProductionRiskAssessments { get; }
+        IRepository<RiskAssessment> RiskAssessments { get; }
         IRepository<User> Users { get; }
         
         Task<int> SaveChangesAsync();

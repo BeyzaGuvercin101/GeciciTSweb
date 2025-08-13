@@ -12,6 +12,7 @@ namespace GeciciTSweb.Application.DTOs
         public int Id { get; set; }
         public decimal? Temperature { get; set; }
         public decimal? Pressure { get; set; }
+        public int TempMaintenanceTypeId { get; set; }
         public string? Fluid { get; set; }
         public MaintenanceWorkflowStatus Status { get; set; }
         public bool IsClosed { get; set; }

@@ -11,6 +11,7 @@ public partial class GeciciTSwebDbContext : DbContext
     public GeciciTSwebDbContext(DbContextOptions<GeciciTSwebDbContext> options)
         : base(options)
     {
+
     }
 
     public virtual DbSet<Companies> Companies { get; set; }
@@ -19,13 +20,9 @@ public partial class GeciciTSwebDbContext : DbContext
 
     public virtual DbSet<MaintenanceRequest> MaintenanceRequests { get; set; }
 
-    public virtual DbSet<RequestLog> RequestLogs { get; set; }
+    
 
-    public virtual DbSet<IntegrityRiskAssessment> IntegrityRiskAssessments { get; set; }
-
-    public virtual DbSet<MaintenanceRiskAssessment> MaintenanceRiskAssessments { get; set; }
-
-    public virtual DbSet<ProductionRiskAssessment> ProductionRiskAssessments { get; set; }
+    public virtual DbSet<RiskAssessment> RiskAssessments { get; set; }
 
     public virtual DbSet<TemporaryMaintenanceType> TemporaryMaintenanceTypes { get; set; }
 
@@ -59,14 +56,16 @@ public partial class GeciciTSwebDbContext : DbContext
             entity.HasIndex(e => e.Status);
             entity.HasIndex(e => e.UnitId);
             entity.HasIndex(e => e.CreatedByUserId);
-            
+            entity.HasIndex(e => e.TempMaintenanceTypeId);
+
             entity.Property(e => e.BildirimNumarasi).HasMaxLength(50);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.EquipmentNumber).HasMaxLength(100);
             entity.Property(e => e.Fluid).HasMaxLength(100);
-            entity.Property(e => e.Pressure).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.Status).HasMaxLength(50);
-            entity.Property(e => e.Temperature).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.Pressure).HasColumnType("decimal(10,2)");
+            entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(50);
+            
+            entity.Property(e => e.Temperature).HasColumnType("decimal(10,2)");
 
             entity.HasOne(d => d.CreatedByUser).WithMany(p => p.MaintenanceRequests)
                 .HasForeignKey(d => d.CreatedByUserId)
@@ -78,25 +77,6 @@ public partial class GeciciTSwebDbContext : DbContext
 
             entity.HasOne(d => d.Unit).WithMany(p => p.MaintenanceRequests)
                 .HasForeignKey(d => d.UnitId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
-        });
-
-        modelBuilder.Entity<RequestLog>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.HasIndex(e => e.MaintenanceRequestId);
-            entity.HasIndex(e => e.AuthorUserId);
-            
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.ActionType).HasMaxLength(50);
-            entity.Property(e => e.ActionNote).HasMaxLength(1000);
-
-            entity.HasOne(d => d.AuthorUser).WithMany(p => p.RequestLogs)
-                .HasForeignKey(d => d.AuthorUserId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
-
-            entity.HasOne(d => d.MaintenanceRequest).WithMany(p => p.RequestLogs)
-                .HasForeignKey(d => d.MaintenanceRequestId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
@@ -118,85 +98,73 @@ public partial class GeciciTSwebDbContext : DbContext
                 .OnDelete(DeleteBehavior.SetNull);
         });
 
-        // Risk Assessment Entity Configurations
-        modelBuilder.Entity<IntegrityRiskAssessment>(entity =>
+        // Risk Assessment Entity Configuration
+        modelBuilder.Entity<RiskAssessment>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.HasIndex(e => e.MaintenanceRequestId);
-            entity.HasIndex(e => e.UserId);
             
+            // Indexes
+            entity.HasIndex(e => e.MaintenanceRequestId);
+            entity.HasIndex(e => e.CreatedByUserId);
+            entity.HasIndex(e => e.ApprovedByUserId);
+            entity.HasIndex(e => e.DepartmentStatus).HasDatabaseName("IX_RA_Status");
+            entity.HasIndex(e => e.CurrentRPN).HasDatabaseName("IX_RA_CurrentRPN");
+            entity.HasIndex(e => e.ResidualRPN).HasDatabaseName("IX_RA_ResidualRPN");
+            
+            // Unique constraint for MaintenanceRequestId + DepartmentCode
+            entity.HasIndex(e => new { e.MaintenanceRequestId, e.DepartmentCode })
+                  .IsUnique()
+                  .HasFilter("[IsDeleted] = 0")
+                  .HasDatabaseName("IX_RA_MaintenanceRequest_Department_Unique");
+            
+            // Property configurations
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.RiskNote).HasMaxLength(1000);
-            entity.Property(e => e.RPNBefore).HasComputedColumnSql("[ImpactBefore] * [ProbabilityBefore]");
-            entity.Property(e => e.RPNAfter).HasComputedColumnSql("[ImpactAfter] * [ProbabilityAfter]");
-
-            entity.HasOne(d => d.User).WithMany()
-                .HasForeignKey(d => d.UserId)
+            entity.Property(e => e.DepartmentStatus).HasConversion<string>().HasMaxLength(30);
+            entity.Property(e => e.ReturnReasonCode).HasMaxLength(500);
+            entity.Property(e => e.ReturnReasonText).HasMaxLength(500);
+            entity.Property(e => e.CancelReasonCode).HasMaxLength(500);
+            entity.Property(e => e.CancelReasonText).HasMaxLength(500);
+            entity.Property(e => e.RiskCategoryCode).HasMaxLength(50);
+            entity.Property(e => e.DepartmentReportNote).HasMaxLength(500);
+            entity.Property(e => e.OperationalRiskNote).HasMaxLength(500);
+            entity.Property(e => e.PlannedTemporaryRepairDate).HasColumnType("DATETIME2(0)");
+            entity.Property(e => e.PlannedPermanentRepairDate).HasColumnType("DATETIME2(0)");
+            entity.Property(e => e.ApprovedAt).HasColumnType("DATETIME2(0)");
+            entity.Property(e => e.CreatedAt).HasColumnType("DATETIME2(0)");
+            entity.Property(e => e.UpdatedAt).HasColumnType("DATETIME2(0)");
+            
+            
+            
+            // Foreign key relationships
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.CreatedRiskAssessments)
+                .HasForeignKey(d => d.CreatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+                
+            entity.HasOne(d => d.ApprovedByUser).WithMany(p => p.ApprovedRiskAssessments)
+                .HasForeignKey(d => d.ApprovedByUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
-            entity.HasOne(d => d.MaintenanceRequest).WithMany(p => p.IntegrityRiskAssessments)
+            entity.HasOne(d => d.MaintenanceRequest).WithMany(p => p.RiskAssessments)
                 .HasForeignKey(d => d.MaintenanceRequestId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
-        modelBuilder.Entity<MaintenanceRiskAssessment>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.HasIndex(e => e.MaintenanceRequestId);
-            entity.HasIndex(e => e.UserId);
-            
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.RiskNote).HasMaxLength(1000);
-            entity.Property(e => e.RPNBefore).HasComputedColumnSql("[ImpactBefore] * [ProbabilityBefore]");
-            entity.Property(e => e.RPNAfter).HasComputedColumnSql("[ImpactAfter] * [ProbabilityAfter]");
-
-            entity.HasOne(d => d.User).WithMany()
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
-
-            entity.HasOne(d => d.MaintenanceRequest).WithMany(p => p.MaintenanceRiskAssessments)
-                .HasForeignKey(d => d.MaintenanceRequestId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
-        });
-
-        modelBuilder.Entity<ProductionRiskAssessment>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.HasIndex(e => e.MaintenanceRequestId);
-            entity.HasIndex(e => e.UserId);
-            
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.RiskNote).HasMaxLength(1000);
-            entity.Property(e => e.RPNBefore).HasComputedColumnSql("[ImpactBefore] * [ProbabilityBefore]");
-            entity.Property(e => e.RPNAfter).HasComputedColumnSql("[ImpactAfter] * [ProbabilityAfter]");
-
-            entity.HasOne(d => d.User).WithMany()
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
-
-            entity.HasOne(d => d.MaintenanceRequest).WithMany(p => p.ProductionRiskAssessments)
-                .HasForeignKey(d => d.MaintenanceRequestId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
-        });
-
-        // User Entity Configuration (updated for Keycloak)
+        // User Entity Configuration
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.HasIndex(e => e.KeycloakSub).IsUnique();
-            entity.Property(e => e.KeycloakSub).HasMaxLength(100);
+            entity.HasIndex(e => e.Username).IsUnique();
+            entity.Property(e => e.Username).HasMaxLength(100);
         });
 
         // Soft Delete Query Filters
         modelBuilder.Entity<Companies>().HasQueryFilter(e => !e.IsDeleted);
         modelBuilder.Entity<Console>().HasQueryFilter(e => !e.IsDeleted);
         modelBuilder.Entity<MaintenanceRequest>().HasQueryFilter(e => !e.IsDeleted);
-        modelBuilder.Entity<RequestLog>().HasQueryFilter(e => !e.IsDeleted);
+        
         modelBuilder.Entity<TemporaryMaintenanceType>().HasQueryFilter(e => !e.IsDeleted);
         modelBuilder.Entity<Unit>().HasQueryFilter(e => !e.IsDeleted);
-        modelBuilder.Entity<IntegrityRiskAssessment>().HasQueryFilter(e => !e.IsDeleted);
-        modelBuilder.Entity<MaintenanceRiskAssessment>().HasQueryFilter(e => !e.IsDeleted);
-        modelBuilder.Entity<ProductionRiskAssessment>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<RiskAssessment>().HasQueryFilter(e => !e.IsDeleted);
         modelBuilder.Entity<User>().HasQueryFilter(e => !e.IsDeleted);
 
 

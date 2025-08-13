@@ -31,7 +31,7 @@ namespace GeciciTSweb.Application.DTOs
         public int TamamlananRiskDegerlendirmeleri { get; set; }
         public int BekleyenRiskDegerlendirmeleri { get; set; }
         
-        // RequestLog bazlı istatistikler (akış işlemleri)
+        // RiskAssessment bazlı istatistikler (akış işlemleri)
         public int OnayIslemleri { get; set; }        // ActionType = "Onay"
         public int RedIslemleri { get; set; }         // ActionType = "Red"
         public int GeriGondermeIslemleri { get; set; } // ActionType = "Geri Gönder"

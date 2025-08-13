@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GeciciTSweb.Domain.Enums;
 
 namespace GeciciTSweb.Application.DTOs
 {
@@ -16,7 +17,7 @@ namespace GeciciTSweb.Application.DTOs
         public decimal? Temperature { get; set; }
         public decimal? Pressure { get; set; }
         public string? Fluid { get; set; }
-        public string Status { get; set; } = null!;
+        public MaintenanceWorkflowStatus Status { get; set; }
         public bool IsClosed { get; set; }
         public int CreatedByUserId { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -24,6 +25,8 @@ namespace GeciciTSweb.Application.DTOs
 
         // Optional display fields (mapping is required)
         public string UnitName { get; set; } = string.Empty;
+        public string ConsoleName { get; set; } = string.Empty;
+        public string CompanyName { get; set; } = string.Empty;
         public string TempMaintenanceTypeName { get; set; } = string.Empty;
     }
 }

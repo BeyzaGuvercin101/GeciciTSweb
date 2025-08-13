@@ -1,13 +1,13 @@
 ﻿using GeciciTSweb.Application.DTOs;
 using GeciciTSweb.Application.Interfaces;
 using GeciciTSweb.Infrastructure.Interfaces;
+using GeciciTSweb.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static GeciciTSweb.Domain.Enums.MaintenanceWorkflowStatus;
 
 namespace GeciciTSweb.Application.Services
 {
@@ -26,16 +26,15 @@ namespace GeciciTSweb.Application.Services
 
             var result = new DashboardCardDto
             {
-                //to sitring olmamalı.
-                ApprovedCount = requests.Count(x => x.Status == Onaylandi.ToString().ToUpperInvariant()),
-                ReturnedCount = requests.Count(x => x.Status == GeriGonderildi.ToString().ToUpperInvariant()),
-                RejectedCount = requests.Count(x => x.Status == IptalEdildi.ToString().ToUpperInvariant()),
+                ApprovedCount = requests.Count(x => x.Status == MaintenanceWorkflowStatus.Onaylandi),
+                ReturnedCount = requests.Count(x => x.Status == MaintenanceWorkflowStatus.GeriGonderildi),
+                RejectedCount = requests.Count(x => x.Status == MaintenanceWorkflowStatus.IptalEdildi),
                 InProgressCount = requests.Count(x =>
-                    x.Status == YeniTalep.ToString().ToUpperInvariant() ||
-                    x.Status == ButunlukDegerlendirmesi.ToString().ToUpperInvariant() ||
-                    x.Status == BakimDegerlendirmesi.ToString().ToUpperInvariant() ||
-                    x.Status == UretimKontrolu.ToString().ToUpperInvariant() ||
-                    x.Status == OnayBekliyor.ToString().ToUpperInvariant())
+                    x.Status == MaintenanceWorkflowStatus.YeniTalep ||
+                    x.Status == MaintenanceWorkflowStatus.ButunlukDegerlendirmesi ||
+                    x.Status == MaintenanceWorkflowStatus.BakimDegerlendirmesi ||
+                    x.Status == MaintenanceWorkflowStatus.UretimKontrolu ||
+                    x.Status == MaintenanceWorkflowStatus.OnayBekliyor)
             };
 
             return result;
@@ -46,20 +45,20 @@ namespace GeciciTSweb.Application.Services
             // Ana form verileri - silinmemiş formlar
             var requests = await _unitOfWork.MaintenanceRequests.FindAsync(x => !x.IsDeleted);
             
-            // RequestLog verileri - akış işlemleri
-            var requestLogs = await _unitOfWork.RequestLogs.FindAsync(x => !x.IsDeleted);
+            // Risk assessment verileri
+            var riskAssessments = await _unitOfWork.RiskAssessments.FindAsync(x => !x.IsDeleted);
 
-            // Form durumlarına göre sayımlar (Status string olarak tutuluyor)
-            var onaylananCount = requests.Count(x => x.Status.ToUpper() == "ONAYLANDI");
-            var geriGonderilenCount = requests.Count(x => x.Status.ToUpper() == "GERIGONDERILDI");
-            var iptalEdilenCount = requests.Count(x => x.Status.ToUpper() == "IPTALEDILDI");
+            // Form durumlarına göre sayımlar (Status enum olarak tutuluyor)
+            var onaylananCount = requests.Count(x => x.Status == MaintenanceWorkflowStatus.Onaylandi);
+            var geriGonderilenCount = requests.Count(x => x.Status == MaintenanceWorkflowStatus.GeriGonderildi);
+            var iptalEdilenCount = requests.Count(x => x.Status == MaintenanceWorkflowStatus.IptalEdildi);
             
             // Workflow aşamaları
-            var yeniTalepCount = requests.Count(x => x.Status.ToUpper() == "YENITTALEP");
-            var butunlukCount = requests.Count(x => x.Status.ToUpper() == "BUTUNLUKDEGERLENDIRMESI");
-            var bakimCount = requests.Count(x => x.Status.ToUpper() == "BAKIMDEGERLENDIRMESI");
-            var uretimCount = requests.Count(x => x.Status.ToUpper() == "URETIMKONTROLU");
-            var onayBekliyorCount = requests.Count(x => x.Status.ToUpper() == "ONAYBEKLIYOR");
+            var yeniTalepCount = requests.Count(x => x.Status == MaintenanceWorkflowStatus.YeniTalep);
+            var butunlukCount = requests.Count(x => x.Status == MaintenanceWorkflowStatus.ButunlukDegerlendirmesi);
+            var bakimCount = requests.Count(x => x.Status == MaintenanceWorkflowStatus.BakimDegerlendirmesi);
+            var uretimCount = requests.Count(x => x.Status == MaintenanceWorkflowStatus.UretimKontrolu);
+            var onayBekliyorCount = requests.Count(x => x.Status == MaintenanceWorkflowStatus.OnayBekliyor);
 
             // Açık/Kapalı form sayıları
             var acikFormlar = requests.Count(x => !x.IsClosed);
@@ -68,16 +67,16 @@ namespace GeciciTSweb.Application.Services
             // Devam eden formlar = Açık olan formlar
             var devamEdenCount = acikFormlar;
 
-            // RequestLog bazlı işlem sayıları
-            var onayIslemleri = requestLogs.Count(x => x.ActionType.ToUpper() == "ONAY");
-            var redIslemleri = requestLogs.Count(x => x.ActionType.ToUpper() == "RED");
-            var geriGondermeIslemleri = requestLogs.Count(x => x.ActionType.ToUpper() == "GERI GÖNDER" || x.ActionType.ToUpper() == "GERIGÖNDER");
-            var iptalIslemleri = requestLogs.Count(x => x.ActionType.ToUpper() == "İPTAL" || x.ActionType.ToUpper() == "IPTAL");
+            // Risk assessment işlem sayıları (DepartmentStatus bazında)
+            var onaylanmisAssessments = riskAssessments.Count(x => x.DepartmentStatus == DepartmentStatus.Onaylandi);
+            var geriGonderilmisAssessments = riskAssessments.Count(x => x.DepartmentStatus == DepartmentStatus.GeriGonderildi);
+            var iptalAssessments = riskAssessments.Count(x => x.DepartmentStatus == DepartmentStatus.Iptal);
+            var degerlendirmeAssessments = riskAssessments.Count(x => x.DepartmentStatus == DepartmentStatus.Degerlendirme);
 
             // Risk assessment tamamlanma durumu
-            // Her form için 3 risk assessment olması gerekiyor
+            // Her form için 3 risk assessment olması gerekiyor (Integrity, Maintenance, Production)
             var totalExpectedAssessments = requests.Count() * 3;
-            var completedAssessments = await GetCompletedRiskAssessmentCount();
+            var completedAssessments = riskAssessments.Count();
             var bekleyenAssessments = totalExpectedAssessments - completedAssessments;
 
             var result = new DashboardStatsDto
@@ -105,11 +104,11 @@ namespace GeciciTSweb.Application.Services
                 TamamlananRiskDegerlendirmeleri = completedAssessments,
                 BekleyenRiskDegerlendirmeleri = bekleyenAssessments > 0 ? bekleyenAssessments : 0,
                 
-                // İşlem sayıları
-                OnayIslemleri = onayIslemleri,
-                RedIslemleri = redIslemleri,
-                GeriGondermeIslemleri = geriGondermeIslemleri,
-                IptalIslemleri = iptalIslemleri
+                // Risk assessment işlem sayıları (RequestLog yerine RiskAssessment durumlarından)
+                OnayIslemleri = onaylanmisAssessments,
+                RedIslemleri = iptalAssessments,
+                GeriGondermeIslemleri = geriGonderilmisAssessments,
+                IptalIslemleri = iptalAssessments
             };
 
             return result;
@@ -117,14 +116,8 @@ namespace GeciciTSweb.Application.Services
 
         private async Task<int> GetCompletedRiskAssessmentCount()
         {
-            var integrityCount = (await _unitOfWork.Repository<Infrastructure.Entities.IntegrityRiskAssessment>()
-                .FindAsync(x => !x.IsDeleted)).Count();
-            var maintenanceCount = (await _unitOfWork.Repository<Infrastructure.Entities.MaintenanceRiskAssessment>()
-                .FindAsync(x => !x.IsDeleted)).Count();
-            var productionCount = (await _unitOfWork.Repository<Infrastructure.Entities.ProductionRiskAssessment>()
-                .FindAsync(x => !x.IsDeleted)).Count();
-                
-            return integrityCount + maintenanceCount + productionCount;
+            var riskAssessments = await _unitOfWork.RiskAssessments.FindAsync(x => !x.IsDeleted);
+            return riskAssessments.Count();
         }
     }
 }

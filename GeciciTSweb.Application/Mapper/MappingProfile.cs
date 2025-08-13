@@ -22,15 +22,14 @@ namespace GeciciTSweb.Application.Mapper
             CreateMap<Infrastructure.Entities.Console, ConsoleListDto>().ReverseMap();
             CreateMap<Infrastructure.Entities.Console, CreateConsoleDto>().ReverseMap();
 
-            // Risk Assessment mappings
-            CreateMap<IntegrityRiskAssessment, RiskAssessmentListDto>();
-            CreateMap<CreateIntegrityRiskAssessmentDto, IntegrityRiskAssessment>();
-
-            CreateMap<MaintenanceRiskAssessment, RiskAssessmentListDto>();
-            CreateMap<CreateMaintenanceRiskAssessmentDto, MaintenanceRiskAssessment>();
-
-            CreateMap<ProductionRiskAssessment, RiskAssessmentListDto>();
-            CreateMap<CreateProductionRiskAssessmentDto, ProductionRiskAssessment>();
+            // Risk Assessment mappings (unified)
+            CreateMap<RiskAssessment, RiskAssessmentDto>()
+                .ForMember(dest => dest.CreatedByUsername, opt => opt.MapFrom(src => src.CreatedByUser.Username))
+                .ForMember(dest => dest.ApprovedByUsername, opt => opt.MapFrom(src => src.ApprovedByUser != null ? src.ApprovedByUser.Username : null));
+            
+            CreateMap<CreateRiskAssessmentDto, RiskAssessment>();
+            CreateMap<UpdateRiskAssessmentDto, RiskAssessment>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             // Unit
             CreateMap<Unit, UnitListDto>()
@@ -43,22 +42,32 @@ namespace GeciciTSweb.Application.Mapper
             CreateMap<TemporaryMaintenanceType, CreateTemporaryMaintenanceTypeDto>().ReverseMap();
             
             CreateMap<CreateMaintenanceRequestDto, MaintenanceRequest>();
-            CreateMap<MaintenanceRequest, MaintenanceRequestDetailDto>();
-            CreateMap<MaintenanceRequest, MaintenanceRequestListDto>();
+            
+            CreateMap<MaintenanceRequest, MaintenanceRequestDetailDto>()
+                .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.Unit.Name))
+                .ForMember(dest => dest.ConsoleName, opt => opt.MapFrom(src => src.Unit.Console != null ? src.Unit.Console.Name : string.Empty))
+                .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Unit.Console != null && src.Unit.Console.Company != null ? src.Unit.Console.Company.Name : string.Empty))
+                .ForMember(dest => dest.TempMaintenanceTypeName, opt => opt.MapFrom(src => src.TempMaintenanceType.Name))
+                .ForMember(dest => dest.CreatedByUsername, opt => opt.MapFrom(src => src.CreatedByUser.Username));
+            
+            CreateMap<MaintenanceRequest, MaintenanceRequestListDto>()
+                .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.Unit.Name))
+                .ForMember(dest => dest.ConsoleName, opt => opt.MapFrom(src => src.Unit.Console != null ? src.Unit.Console.Name : string.Empty))
+                .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Unit.Console != null && src.Unit.Console.Company != null ? src.Unit.Console.Company.Name : string.Empty))
+                .ForMember(dest => dest.TempMaintenanceTypeName, opt => opt.MapFrom(src => src.TempMaintenanceType.Name));
+            
             CreateMap<MaintenanceRequest, MaintenanceRequestDto>()
-    .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.Unit.Name))
-    .ForMember(dest => dest.TempMaintenanceTypeName, opt => opt.MapFrom(src => src.TempMaintenanceType.Name));
+                .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.Unit.Name))
+                .ForMember(dest => dest.ConsoleName, opt => opt.MapFrom(src => src.Unit.Console != null ? src.Unit.Console.Name : string.Empty))
+                .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Unit.Console != null && src.Unit.Console.Company != null ? src.Unit.Console.Company.Name : string.Empty))
+                .ForMember(dest => dest.TempMaintenanceTypeName, opt => opt.MapFrom(src => src.TempMaintenanceType.Name));
 
 
-            CreateMap<UpdateMaintenanceRequestDto, MaintenanceRequest>()
-    .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+            CreateMap<UpdateMaintenanceRequestDto, MaintenanceRequest>();
 
-            CreateMap<MaintenanceRequest, UpdateMaintenanceRequestDto>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Enum.Parse<MaintenanceWorkflowStatus>(src.Status)));
+            CreateMap<MaintenanceRequest, UpdateMaintenanceRequestDto>();
 
-            // RequestLog
-            CreateMap<RequestLog, RequestLogDto>().ReverseMap();
-            CreateMap<RequestLog, CreateRequestLogDto>().ReverseMap();
+            
         }
     }
 }

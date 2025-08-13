@@ -10,11 +10,13 @@ public partial class User
 
     [Required]
     [MaxLength(100)]
-    public string KeycloakSub { get; set; } = null!; // Keycloak user identifier
+    public string Username { get; set; } = null!; // Primary user identifier
 
     public bool IsDeleted { get; set; } = false;
 
-    // Navigation Properties - MaintenanceRequest ile User arasında bağlantı için
+    // Navigation Properties
     public virtual ICollection<MaintenanceRequest> MaintenanceRequests { get; set; } = new List<MaintenanceRequest>();
-    public virtual ICollection<RequestLog> RequestLogs { get; set; } = new List<RequestLog>();
+    
+    public virtual ICollection<RiskAssessment> CreatedRiskAssessments { get; set; } = new List<RiskAssessment>();
+    public virtual ICollection<RiskAssessment> ApprovedRiskAssessments { get; set; } = new List<RiskAssessment>();
 }

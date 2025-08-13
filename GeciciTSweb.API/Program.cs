@@ -31,11 +31,9 @@ builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IConsoleService, ConsoleService>();
 builder.Services.AddScoped<IUnitService, UnitService>();
 builder.Services.AddScoped<ITemporaryMaintenanceTypeService, TemporaryMaintenanceTypeService>();
-builder.Services.AddScoped<IIntegrityRiskAssessmentService, IntegrityRiskAssessmentService>();
-builder.Services.AddScoped<IMaintenanceRiskAssessmentService, MaintenanceRiskAssessmentService>();
-builder.Services.AddScoped<IProductionRiskAssessmentService, ProductionRiskAssessmentService>();
+builder.Services.AddScoped<IRiskAssessmentService, RiskAssessmentService>();
 builder.Services.AddScoped<IMaintenanceRequestService, MaintenanceRequestService>();
-builder.Services.AddScoped<IRequestLogService, RequestLogService>();
+builder.Services.AddScoped<IMaintenanceRequestSummaryService, MaintenanceRequestSummaryService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 // AutoMapper
@@ -50,8 +48,21 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Seed the database
-// DataSeeder removed - using existing database data
+// Seed the database with test data
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<GeciciTSwebDbContext>();
+        // DataSeeder removed - use /api/test/seed-data endpoint instead
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Test verilerini eklerken bir hata oluştu.");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

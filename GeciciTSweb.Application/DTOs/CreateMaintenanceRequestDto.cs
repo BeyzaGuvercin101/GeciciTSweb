@@ -18,10 +18,8 @@ public class CreateMaintenanceRequestDto
     [Required]
     public int TempMaintenanceTypeId { get; set; }
 
-    [Range(0, 999.99)]
     public decimal? Temperature { get; set; }
 
-    [Range(0, 999.99)]
     public decimal? Pressure { get; set; }
 
     [MaxLength(100)]

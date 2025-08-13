@@ -4,11 +4,11 @@ namespace GeciciTSweb.Application.Interfaces;
 
 public interface IMaintenanceRequestService
 {
-    Task<int> CreateAsync(CreateMaintenanceRequestDto dto, string keycloakSub);
-    Task<bool> UpdateAsync(UpdateMaintenanceRequestDto dto, string keycloakSub);
-    Task<bool> PatchAsync(PatchMaintenanceRequestDto dto, string keycloakSub);
+    Task<int> CreateAsync(CreateMaintenanceRequestDto dto, string username);
+    Task<bool> UpdateAsync(UpdateMaintenanceRequestDto dto, string username);
+    Task<bool> PatchAsync(PatchMaintenanceRequestDto dto, string username);
     Task<IEnumerable<MaintenanceRequestListDto>> GetAllAsync();
-    Task<IEnumerable<MaintenanceRequestListDto>> GetByUserAsync(string keycloakSub);
+    Task<IEnumerable<MaintenanceRequestListDto>> GetByUserAsync(string username);
     Task<MaintenanceRequestDto?> GetByIdAsync(int id);
-    Task<bool> DeleteAsync(int id, string keycloakSub); // soft delete
+    Task<bool> DeleteAsync(int id, string username); // soft delete
 }

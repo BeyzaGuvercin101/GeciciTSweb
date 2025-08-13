@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using GeciciTSweb.Domain.Enums;
 
 namespace GeciciTSweb.Infrastructure.Entities;
 
@@ -23,18 +24,15 @@ public partial class MaintenanceRequest
     [Required]
     public int TempMaintenanceTypeId { get; set; }
 
-    [Range(0, 999.99)]
     public decimal? Temperature { get; set; }
 
-    [Range(0, 999.99)]
     public decimal? Pressure { get; set; }
 
     [MaxLength(100)]
     public string? Fluid { get; set; }
 
     [Required]
-    [MaxLength(50)]
-    public string Status { get; set; } = null!;
+    public MaintenanceWorkflowStatus Status { get; set; }
 
     public bool IsClosed { get; set; }
 
@@ -51,8 +49,6 @@ public partial class MaintenanceRequest
     public virtual Unit Unit { get; set; } = null!;
     public virtual TemporaryMaintenanceType TempMaintenanceType { get; set; } = null!;
     public virtual User CreatedByUser { get; set; } = null!;
-    public virtual ICollection<RequestLog> RequestLogs { get; set; } = new List<RequestLog>();
-    public virtual ICollection<IntegrityRiskAssessment> IntegrityRiskAssessments { get; set; } = new List<IntegrityRiskAssessment>();
-    public virtual ICollection<MaintenanceRiskAssessment> MaintenanceRiskAssessments { get; set; } = new List<MaintenanceRiskAssessment>();
-    public virtual ICollection<ProductionRiskAssessment> ProductionRiskAssessments { get; set; } = new List<ProductionRiskAssessment>();
+    
+    public virtual ICollection<RiskAssessment> RiskAssessments { get; set; } = new List<RiskAssessment>();
 }
