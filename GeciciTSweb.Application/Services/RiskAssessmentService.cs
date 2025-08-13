@@ -44,7 +44,6 @@ namespace GeciciTSweb.Application.Services
 
             var riskAssessment = _mapper.Map<RiskAssessment>(dto);
             riskAssessment.CreatedAt = DateTime.UtcNow;
-            riskAssessment.DepartmentStatus = DepartmentStatus.Degerlendirme;
             
             // Calculate RPN values
             riskAssessment.CalculateRPN();

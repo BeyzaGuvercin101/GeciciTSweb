@@ -15,8 +15,5 @@ namespace GeciciTSweb.Application.DTOs
         // Navigation properties for display
         public string ConsoleName { get; set; } = string.Empty;
         public string CompanyName { get; set; } = string.Empty;
-        
-        // Computed property to handle null ConsoleId display
-        public string ConsoleDisplay => ConsoleId.HasValue ? ConsoleName : "-";
     }
 }

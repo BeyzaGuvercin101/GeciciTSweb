@@ -45,6 +45,7 @@ public partial class RiskAssessment
     [Range(1, 10)]
     public int? CurrentImpact { get; set; }
 
+    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public int? CurrentRPN { get; set; } // CurrentProbability * CurrentImpact
 
     [Range(1, 10)]
@@ -53,6 +54,7 @@ public partial class RiskAssessment
     [Range(1, 10)]
     public int? ResidualImpact { get; set; }
 
+    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public int? ResidualRPN { get; set; } // ResidualProbability * ResidualImpact
 
     [MaxLength(500)]

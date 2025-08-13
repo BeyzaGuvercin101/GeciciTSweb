@@ -67,13 +67,11 @@ public class MaintenanceRequestsController : ControllerBase
             return StatusCode(500, new { message = "Bir hata oluştu" });
         }
     }
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateMaintenanceRequestDto dto)
+    [HttpPut()]
+    public async Task<IActionResult> Update([FromBody] UpdateMaintenanceRequestDto dto)
     {
         try
         {
-            dto.Id = id; // body.Id yerine route id
-
             var username = GetCurrentUsername();
             var success = await _service.UpdateAsync(dto, username);
             return success ? NoContent() : NotFound();
@@ -84,7 +82,7 @@ public class MaintenanceRequestsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating maintenance request {Id}", id);
+            _logger.LogError(ex, "Error updating maintenance request {Id}", dto.Id);
             return StatusCode(500, new { message = "Bir hata oluştu" });
         }
     }

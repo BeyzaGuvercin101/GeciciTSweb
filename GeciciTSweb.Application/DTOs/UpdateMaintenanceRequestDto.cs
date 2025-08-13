@@ -16,6 +16,7 @@ namespace GeciciTSweb.Application.DTOs
         public string? Fluid { get; set; }
         public MaintenanceWorkflowStatus Status { get; set; }
         public bool IsClosed { get; set; }
+
         public DateTime? UpdatedAt { get; set; }
 
     }

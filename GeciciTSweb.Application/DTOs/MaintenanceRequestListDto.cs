@@ -15,6 +15,10 @@ namespace GeciciTSweb.Application.DTOs
         public MaintenanceWorkflowStatus Status { get; set; }
         public bool IsClosed { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public decimal? Temperature { get; set; }
+        public decimal? Pressure { get; set; }
+        public string? Fluid { get; set; }
         public string EquipmentNumber { get; set; } = null!;
         
         // Display fields for better list view
@@ -22,5 +26,6 @@ namespace GeciciTSweb.Application.DTOs
         public string ConsoleName { get; set; } = string.Empty;
         public string CompanyName { get; set; } = string.Empty;
         public string TempMaintenanceTypeName { get; set; } = string.Empty;
+        public int TempMaintenanceTypeId { get; set; }
     }
 }
