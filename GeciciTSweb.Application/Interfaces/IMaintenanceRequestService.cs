@@ -10,5 +10,5 @@ public interface IMaintenanceRequestService
     Task<IEnumerable<MaintenanceRequestListDto>> GetAllAsync();
     Task<IEnumerable<MaintenanceRequestListDto>> GetByUserAsync(string username);
     Task<MaintenanceRequestDto?> GetByIdAsync(int id);
-    Task<bool> DeleteAsync(int id, string username); // soft delete
+   
 }

@@ -132,26 +132,7 @@ public class MaintenanceRequestService : IMaintenanceRequestService
         return entity == null ? null : _mapper.Map<MaintenanceRequestDto>(entity);
     }
 
-    public async Task<bool> DeleteAsync(int id, string username)
-    {
-        if (string.IsNullOrWhiteSpace(username))
-            throw new ArgumentException("Username is required", nameof(username));
-
-        var entity = await _unitOfWork.MaintenanceRequests.GetByIdAsync(id);
-        if (entity == null || entity.IsDeleted) return false;
-
-        // Kullanıcının kendisine ait olan kaydı silme yetkisi kontrolü
-        var user = await _unitOfWork.Users.FirstOrDefaultAsync(u => u.Username == username);
-        if (user == null || entity.CreatedByUserId != user.Id)
-            throw new UnauthorizedAccessException("Bu kaydı silme yetkiniz yok.");
-
-        entity.IsDeleted = true;
-        entity.UpdatedAt = DateTime.UtcNow;
-
-        _unitOfWork.MaintenanceRequests.Update(entity);
-        await _unitOfWork.SaveChangesAsync();
-        return true;
-    }
+    
 
     public async Task<IEnumerable<MaintenanceRequestListDto>> GetByUserAsync(string username)
     {

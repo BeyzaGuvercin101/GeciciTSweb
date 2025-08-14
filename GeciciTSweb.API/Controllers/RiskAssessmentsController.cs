@@ -21,7 +21,7 @@ namespace GeciciTSweb.API.Controllers
         /// </summary>
         [HttpGet]
         public async Task<ActionResult<RiskAssessmentDto>> GetByMaintenanceRequestAndDepartment(
-            [FromQuery] int requestId, 
+            [FromQuery] int requestId,
             [FromQuery] int department)
         {
             if (!Enum.IsDefined(typeof(DepartmentCode), department))
@@ -39,6 +39,40 @@ namespace GeciciTSweb.API.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Get all risk assessments for a maintenance request
+        /// </summary>
+        [HttpGet("by-request/{requestId}")]
+        public async Task<ActionResult<List<RiskAssessmentDto>>> GetByMaintenanceRequest(int requestId)
+        {
+            var result = await _riskAssessmentService.GetByMaintenanceRequestAsync(requestId);
+
+            if (result == null || result.Count == 0)
+            {
+                return NoContent(); // 204 - hiç kayýt yoksa
+            }
+
+            return Ok(result);
+        }
+        /// <summary>
+        /// Get all risk assessments
+        /// </summary>
+        [HttpGet("all")]
+        public async Task<ActionResult<List<RiskAssessmentDto>>> GetAll()
+        {
+            var result = await _riskAssessmentService.GetAllAsync();
+
+            if (result == null || result.Count == 0)
+            {
+                return NoContent();
+            }
+
+            return Ok(result);
+        }
+
+
+
 
         /// <summary>
         /// Create new risk assessment (start department evaluation)

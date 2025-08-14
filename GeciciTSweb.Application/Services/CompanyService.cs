@@ -64,15 +64,6 @@ namespace GeciciTSweb.Application.Services
             }
         }
 
-        public async Task<bool> SoftDeleteAsync(int id)
-        {
-            var company = await _unitOfWork.Companies.GetByIdAsync(id);
-            if (company == null || company.IsDeleted) return false;
-
-            company.IsDeleted = true;
-            _unitOfWork.Companies.Update(company);
-            await _unitOfWork.SaveChangesAsync();
-            return true;
-        }
+        
     }
 }

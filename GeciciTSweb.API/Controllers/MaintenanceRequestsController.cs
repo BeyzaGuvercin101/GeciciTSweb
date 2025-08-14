@@ -194,30 +194,6 @@ public class MaintenanceRequestsController : ControllerBase
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                var username = GetCurrentUsername();
-                var result = await _service.DeleteAsync(id, username);
-                
-                if (!result) return NotFound();
-                
-                _logger.LogInformation("Maintenance request {RequestId} deleted by user {UserId}", id, username);
-                return NoContent();
-            }
-        catch (UnauthorizedAccessException ex)
-        {
-            _logger.LogWarning("Unauthorized access: {Message}", ex.Message);
-            // return Forbid(ex.Message);
-            return StatusCode(StatusCodes.Status403Forbidden, new { message = ex.Message });
-        }
-
-        catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting maintenance request {Id}", id);
-                return StatusCode(500, new { message = "Bir hata oluştu" });
-            }
-        }
+        
+        
     }

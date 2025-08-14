@@ -12,6 +12,6 @@ namespace GeciciTSweb.Application.Interfaces
         Task<List<CompaniesListDto>> GetAllAsync();
         Task<CompaniesListDto> GetByIdAsync(int id);
         Task<int> CreateAsync(CreateCompaniesDto dto);
-        Task<bool> SoftDeleteAsync(int id);
+        
     }
 }
