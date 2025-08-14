@@ -10,7 +10,10 @@ public partial class User
 
     [Required]
     [MaxLength(100)]
-    public string Username { get; set; } = null!; // Primary user identifier
-
+    public string Username { get; set; } = null!; // Primary user 
+    public string Password { get; set; }
     public bool IsDeleted { get; set; } = false;
+
+    public virtual ICollection<MaintenanceRequest> MaintenanceRequests { get; set; }
+    public virtual ICollection<RiskAssessment> RiskAssessments { get; set; }
 }

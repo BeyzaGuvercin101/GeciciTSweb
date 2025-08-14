@@ -35,6 +35,7 @@ builder.Services.AddScoped<IRiskAssessmentService, RiskAssessmentService>();
 builder.Services.AddScoped<IMaintenanceRequestService, MaintenanceRequestService>();
 builder.Services.AddScoped<IMaintenanceRequestSummaryService, MaintenanceRequestSummaryService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(cfg =>

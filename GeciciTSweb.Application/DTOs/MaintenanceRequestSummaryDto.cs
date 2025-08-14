@@ -17,7 +17,7 @@ namespace GeciciTSweb.Application.DTOs
     public class DepartmentSummaryDto
     {
         public string Code { get; set; } = null!; // Integrity, Maintenance, Production
-        public string Status { get; set; } = null!;
+        public int? Status { get; set; }
         public int? CurrentRPN { get; set; }
         public int? ResidualRPN { get; set; }
         public DateTime? PlannedTemporaryRepairDate { get; set; }

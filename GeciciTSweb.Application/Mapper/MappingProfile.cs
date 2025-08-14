@@ -63,7 +63,8 @@ namespace GeciciTSweb.Application.Mapper
             CreateMap<RiskAssessment, RiskAssessmentDto>().ReverseMap();
 
 
-
+            CreateMap<User, RegisterRequest>().ReverseMap();
+            CreateMap<User, RegisterResponse>().ReverseMap();
             
         }
     }

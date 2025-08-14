@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GeciciTSweb.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,7 +32,7 @@ namespace GeciciTSweb.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,6 +46,7 @@ namespace GeciciTSweb.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Username = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -60,7 +61,7 @@ namespace GeciciTSweb.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CompanyId = table.Column<int>(type: "int", nullable: false),
+                    CompanyId = table.Column<int>(type: "int", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -80,7 +81,7 @@ namespace GeciciTSweb.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ConsoleId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -108,7 +109,7 @@ namespace GeciciTSweb.Infrastructure.Migrations
                     Fluid = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     IsClosed = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedByUserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -120,14 +121,17 @@ namespace GeciciTSweb.Infrastructure.Migrations
                         name: "FK_MaintenanceRequests_TemporaryMaintenanceTypes_TempMaintenanceTypeId",
                         column: x => x.TempMaintenanceTypeId,
                         principalTable: "TemporaryMaintenanceTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_MaintenanceRequests_Units_UnitId",
                         column: x => x.UnitId,
                         principalTable: "Units",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MaintenanceRequests_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -138,7 +142,7 @@ namespace GeciciTSweb.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MaintenanceRequestId = table.Column<int>(type: "int", nullable: false),
                     DepartmentCode = table.Column<int>(type: "int", nullable: false),
-                    DepartmentStatus = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    DepartmentStatus = table.Column<int>(type: "int", nullable: false),
                     ReturnReasonCode = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     ReturnReasonText = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CancelReasonCode = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
@@ -156,7 +160,7 @@ namespace GeciciTSweb.Infrastructure.Migrations
                     OperationalRiskNote = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     ApprovedByUserId = table.Column<int>(type: "int", nullable: true),
                     ApprovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedByUserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -168,8 +172,12 @@ namespace GeciciTSweb.Infrastructure.Migrations
                         name: "FK_RiskAssessments_MaintenanceRequests_MaintenanceRequestId",
                         column: x => x.MaintenanceRequestId,
                         principalTable: "MaintenanceRequests",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_RiskAssessments_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -194,9 +202,25 @@ namespace GeciciTSweb.Infrastructure.Migrations
                 column: "UnitId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MaintenanceRequests_UserId",
+                table: "MaintenanceRequests",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RiskAssessments_MaintenanceRequestId",
                 table: "RiskAssessments",
                 column: "MaintenanceRequestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RiskAssessments_UserId",
+                table: "RiskAssessments",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TemporaryMaintenanceTypes_Name",
+                table: "TemporaryMaintenanceTypes",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Units_ConsoleId",
@@ -211,9 +235,6 @@ namespace GeciciTSweb.Infrastructure.Migrations
                 name: "RiskAssessments");
 
             migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
                 name: "MaintenanceRequests");
 
             migrationBuilder.DropTable(
@@ -221,6 +242,9 @@ namespace GeciciTSweb.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Units");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Consoles");

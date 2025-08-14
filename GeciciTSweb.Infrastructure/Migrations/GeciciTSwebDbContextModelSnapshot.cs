@@ -54,7 +54,7 @@ namespace GeciciTSweb.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompanyId")
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
@@ -82,9 +82,6 @@ namespace GeciciTSweb.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("CreatedByUserId")
-                        .HasColumnType("int");
 
                     b.Property<string>("EquipmentNumber")
                         .IsRequired()
@@ -124,11 +121,16 @@ namespace GeciciTSweb.Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TempMaintenanceTypeId");
 
                     b.HasIndex("UnitId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("MaintenanceRequests");
                 });
@@ -158,9 +160,6 @@ namespace GeciciTSweb.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedByUserId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CurrentImpact")
                         .HasColumnType("int");
 
@@ -177,10 +176,8 @@ namespace GeciciTSweb.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("DepartmentStatus")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                    b.Property<int>("DepartmentStatus")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -222,9 +219,14 @@ namespace GeciciTSweb.Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MaintenanceRequestId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("RiskAssessments");
                 });
@@ -242,9 +244,13 @@ namespace GeciciTSweb.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("TemporaryMaintenanceTypes");
                 });
@@ -265,7 +271,8 @@ namespace GeciciTSweb.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -285,6 +292,10 @@ namespace GeciciTSweb.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -300,7 +311,7 @@ namespace GeciciTSweb.Infrastructure.Migrations
                     b.HasOne("GeciciTSweb.Infrastructure.Entities.Companies", "Company")
                         .WithMany("Consoles")
                         .HasForeignKey("CompanyId")
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Company");
                 });
@@ -310,18 +321,26 @@ namespace GeciciTSweb.Infrastructure.Migrations
                     b.HasOne("GeciciTSweb.Infrastructure.Entities.TemporaryMaintenanceType", "TempMaintenanceType")
                         .WithMany("MaintenanceRequests")
                         .HasForeignKey("TempMaintenanceTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("GeciciTSweb.Infrastructure.Entities.Unit", "Unit")
                         .WithMany("MaintenanceRequests")
                         .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("GeciciTSweb.Infrastructure.Entities.User", "User")
+                        .WithMany("MaintenanceRequests")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("TempMaintenanceType");
 
                     b.Navigation("Unit");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GeciciTSweb.Infrastructure.Entities.RiskAssessment", b =>
@@ -329,17 +348,26 @@ namespace GeciciTSweb.Infrastructure.Migrations
                     b.HasOne("GeciciTSweb.Infrastructure.Entities.MaintenanceRequest", "MaintenanceRequest")
                         .WithMany("RiskAssessment")
                         .HasForeignKey("MaintenanceRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("GeciciTSweb.Infrastructure.Entities.User", "User")
+                        .WithMany("RiskAssessments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("MaintenanceRequest");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GeciciTSweb.Infrastructure.Entities.Unit", b =>
                 {
                     b.HasOne("GeciciTSweb.Infrastructure.Entities.Console", "Console")
                         .WithMany("Units")
-                        .HasForeignKey("ConsoleId");
+                        .HasForeignKey("ConsoleId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Console");
                 });
@@ -367,6 +395,13 @@ namespace GeciciTSweb.Infrastructure.Migrations
             modelBuilder.Entity("GeciciTSweb.Infrastructure.Entities.Unit", b =>
                 {
                     b.Navigation("MaintenanceRequests");
+                });
+
+            modelBuilder.Entity("GeciciTSweb.Infrastructure.Entities.User", b =>
+                {
+                    b.Navigation("MaintenanceRequests");
+
+                    b.Navigation("RiskAssessments");
                 });
 #pragma warning restore 612, 618
         }

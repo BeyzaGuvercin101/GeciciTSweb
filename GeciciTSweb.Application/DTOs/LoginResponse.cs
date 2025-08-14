@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace GeciciTSweb.Application.DTOs
 {
-    public class CreateConsoleDto
+    public class LoginResponse
     {
-        public string Name { get; set; } = null!;
-        public int? CompanyId { get; set; } = null;
+        public bool Succeeded { get; set; }
+        public string Token { get; set; }
     }
 }

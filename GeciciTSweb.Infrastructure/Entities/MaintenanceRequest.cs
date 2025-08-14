@@ -38,7 +38,7 @@ public partial class MaintenanceRequest
     public bool IsClosed { get; set; }
 
     [Required]
-    public int CreatedByUserId { get; set; } // User tablosundaki ID
+    public int UserId { get; set; } // User tablosundaki ID
 
     public DateTime CreatedAt { get; set; }
 
@@ -51,6 +51,9 @@ public partial class MaintenanceRequest
     public virtual Unit Unit { get; set; }
     [ForeignKey("TempMaintenanceTypeId")]
     public virtual TemporaryMaintenanceType TempMaintenanceType { get; set; }
+    
+    [ForeignKey("UserId")]
+    public virtual User User { get; set; }
     
     public virtual ICollection<RiskAssessment> RiskAssessment { get; set; }
 }

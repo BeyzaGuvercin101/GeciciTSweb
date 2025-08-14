@@ -45,10 +45,55 @@ public partial class GeciciTSwebDbContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.HasOne(d => d.Company).WithMany(p => p.Consoles)
                 .HasForeignKey(d => d.CompanyId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                 .OnDelete(DeleteBehavior.NoAction);
         });
 
 
+        modelBuilder.Entity<TemporaryMaintenanceType>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Name).IsUnique();
+            entity.Property(e => e.Name).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<Unit>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.HasOne(d => d.Console).WithMany(p => p.Units)
+                .HasForeignKey(d => d.ConsoleId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<RiskAssessment>()
+                    .HasOne(r => r.User)
+                    .WithMany(u => u.RiskAssessments)
+                    .HasForeignKey(r => r.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<RiskAssessment>()
+                    .HasOne(r => r.MaintenanceRequest)
+                    .WithMany(m => m.RiskAssessment)
+                    .HasForeignKey(r => r.MaintenanceRequestId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+
+        // Soft Delete Query Filters
+        modelBuilder.Entity<Companies>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<Console>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<MaintenanceRequest>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<TemporaryMaintenanceType>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<Unit>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<RiskAssessment>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<User>().HasQueryFilter(e => !e.IsDeleted);
+
+        foreach (var relationship in modelBuilder.Model.GetEntityTypes()
+        .SelectMany(e => e.GetForeignKeys()))
+        {
+            relationship.DeleteBehavior = DeleteBehavior.NoAction;
+        }
+
+        base.OnModelCreating(modelBuilder);
 
         //modelBuilder.Entity<MaintenanceRequest>(entity =>
         //{
@@ -79,21 +124,6 @@ public partial class GeciciTSwebDbContext : DbContext
 
 
 
-        //    modelBuilder.Entity<TemporaryMaintenanceType>(entity =>
-        //    {
-        //        entity.HasKey(e => e.Id);
-        //        entity.HasIndex(e => e.Name).IsUnique();
-        //        entity.Property(e => e.Name).HasMaxLength(100);
-        //    });
-
-        //    modelBuilder.Entity<Unit>(entity =>
-        //    {
-        //        entity.HasKey(e => e.Id);
-        //        entity.Property(e => e.Name).HasMaxLength(100);
-        //        entity.HasOne(d => d.Console).WithMany(p => p.Units)
-        //            .HasForeignKey(d => d.ConsoleId)
-        //            .OnDelete(DeleteBehavior.SetNull);
-        //    });
 
         //    // Risk Assessment Entity Configuration
         //    modelBuilder.Entity<RiskAssessment>(entity =>
@@ -154,15 +184,7 @@ public partial class GeciciTSwebDbContext : DbContext
         //        entity.Property(e => e.Username).HasMaxLength(100);
         //    });
 
-        //    // Soft Delete Query Filters
-        //    modelBuilder.Entity<Companies>().HasQueryFilter(e => !e.IsDeleted);
-        //    modelBuilder.Entity<Console>().HasQueryFilter(e => !e.IsDeleted);
-        //    modelBuilder.Entity<MaintenanceRequest>().HasQueryFilter(e => !e.IsDeleted);
 
-        //    modelBuilder.Entity<TemporaryMaintenanceType>().HasQueryFilter(e => !e.IsDeleted);
-        //    modelBuilder.Entity<Unit>().HasQueryFilter(e => !e.IsDeleted);
-        //    modelBuilder.Entity<RiskAssessment>().HasQueryFilter(e => !e.IsDeleted);
-        //    modelBuilder.Entity<User>().HasQueryFilter(e => !e.IsDeleted);
 
 
         //    OnModelCreatingPartial(modelBuilder);

@@ -36,7 +36,8 @@ public class MaintenanceRequestService : IMaintenanceRequestService
             user = new User
             {
                 Username = username,
-                IsDeleted = false
+                IsDeleted = false,
+                Password = username
             };
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.SaveChangesAsync(); // User'ı kaydet ki ID'sini alalım
@@ -46,7 +47,7 @@ public class MaintenanceRequestService : IMaintenanceRequestService
         entity.CreatedAt = DateTime.UtcNow;
         entity.Status = MaintenanceWorkflowStatus.YeniTalep;
         entity.IsClosed = false;
-        entity.CreatedByUserId = user.Id;
+        entity.UserId = user.Id;
 
         await _unitOfWork.MaintenanceRequests.AddAsync(entity);
         await _unitOfWork.SaveChangesAsync();
@@ -63,7 +64,7 @@ public class MaintenanceRequestService : IMaintenanceRequestService
 
         // Kullanıcının bu kaydı güncelleme yetkisi kontrolü
         var user = await _unitOfWork.Users.FirstOrDefaultAsync(u => u.Username == username);
-        if (user == null || entity.CreatedByUserId != user.Id)
+        if (user == null || entity.UserId != user.Id)
             throw new UnauthorizedAccessException("Bu kaydı güncelleme yetkiniz yok.");
 
         entity.Temperature = dto.Temperature;
@@ -89,7 +90,7 @@ public class MaintenanceRequestService : IMaintenanceRequestService
 
         // Kullanıcının bu kaydı güncelleme yetkisi kontrolü
         var user = await _unitOfWork.Users.FirstOrDefaultAsync(u => u.Username == username);
-        if (user == null || entity.CreatedByUserId != user.Id)
+        if (user == null || entity.UserId != user.Id)
             throw new UnauthorizedAccessException("Bu kaydı güncelleme yetkiniz yok.");
 
         // Sadece null olmayan alanları güncelle (PATCH semantiği)
@@ -142,7 +143,7 @@ public class MaintenanceRequestService : IMaintenanceRequestService
 
         // Kullanıcının kendisine ait olan kaydı silme yetkisi kontrolü
         var user = await _unitOfWork.Users.FirstOrDefaultAsync(u => u.Username == username);
-        if (user == null || entity.CreatedByUserId != user.Id)
+        if (user == null || entity.UserId != user.Id)
             throw new UnauthorizedAccessException("Bu kaydı silme yetkiniz yok.");
 
         entity.IsDeleted = true;
@@ -168,7 +169,7 @@ public class MaintenanceRequestService : IMaintenanceRequestService
                 .ThenInclude(u => u.Console)
                     .ThenInclude(c => c.Company)
             .Include(x => x.TempMaintenanceType)
-            .Where(x => x.CreatedByUserId == user.Id && !x.IsDeleted)
+            .Where(x => x.UserId == user.Id && !x.IsDeleted)
             .ToListAsync();
         return _mapper.Map<IEnumerable<MaintenanceRequestListDto>>(entities);
     }

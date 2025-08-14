@@ -10,11 +10,11 @@ public partial class Console
 
     public string Name { get; set; } = null!;
 
-    public int CompanyId { get; set; }
+    public int? CompanyId { get; set; } = null;
     public bool IsDeleted { get; set; }= false;
 
     [ForeignKey("CompanyId")]
-    public virtual Companies Company { get; set; }
+    public virtual Companies? Company { get; set; }
 
     public virtual ICollection<Unit> Units { get; set; }
 }

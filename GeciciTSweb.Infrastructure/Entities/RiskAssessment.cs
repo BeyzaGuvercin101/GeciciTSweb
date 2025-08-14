@@ -18,8 +18,7 @@ public partial class RiskAssessment
     public int DepartmentCode { get; set; } // 1=Integrity, 2=Maintenance, 3=Production
 
     [Required]
-    [MaxLength(30)]
-    public string DepartmentStatus { get; set; }
+    public int DepartmentStatus { get; set; }
 
     [MaxLength(500)]
     public string? ReturnReasonCode { get; set; }
@@ -67,7 +66,7 @@ public partial class RiskAssessment
     public DateTime? ApprovedAt { get; set; }
 
     [Required]
-    public int CreatedByUserId { get; set; }
+    public int UserId { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
@@ -78,6 +77,9 @@ public partial class RiskAssessment
     // Navigation Properties
     [ForeignKey("MaintenanceRequestId")]
     public virtual MaintenanceRequest MaintenanceRequest { get; set; }
+
+    [ForeignKey("UserId")]
+    public virtual User User { get; set; }
 
     // Helper method to calculate RPN
     public void CalculateRPN()
