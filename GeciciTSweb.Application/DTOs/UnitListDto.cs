@@ -15,5 +15,6 @@ namespace GeciciTSweb.Application.DTOs
         // Navigation properties for display
         public string ConsoleName { get; set; } = string.Empty;
         public string CompanyName { get; set; } = string.Empty;
+        public int? CompanyId { get; set; }
     }
 }

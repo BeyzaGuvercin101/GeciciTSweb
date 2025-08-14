@@ -25,8 +25,26 @@ namespace GeciciTSweb.Application.Services
 
         public async Task<List<UnitListDto>> GetAllAsync()
         {
-            var units = await _unitOfWork.Units.FindAsync(u => !u.IsDeleted);
-            return _mapper.Map<List<UnitListDto>>(units);
+            var result = (
+                     from units in await _unitOfWork.Units.GetAllAsync()
+                     join consoles in await _unitOfWork.Consoles.GetAllAsync()
+                     on units.ConsoleId equals consoles.Id into consolesJoin
+                     from consoles in consolesJoin.DefaultIfEmpty()
+                     join company in await _unitOfWork.Companies.GetAllAsync()
+                     on consoles != null ? consoles.CompanyId : (int?)null equals company.Id into companiesJoin
+                     from company in companiesJoin.DefaultIfEmpty()
+                     where !units.IsDeleted
+                     select new UnitListDto
+                     {
+                         Id = units.Id,
+                         Name = units.Name,
+                         ConsoleId = consoles?.Id,
+                         ConsoleName = consoles?.Name,
+                         CompanyName = company?.Name,
+                         CompanyId = company?.Id
+                     }
+                 ).ToList();
+            return result;
         }
 
         public async Task<List<UnitListDto>> GetByConsoleIdAsync(int consoleId)
@@ -46,7 +64,8 @@ namespace GeciciTSweb.Application.Services
                         Name = units.Name,
                         ConsoleId = consoles.Id,
                         ConsoleName = consoles.Name,
-                        CompanyName = company.Name
+                        CompanyName = company.Name,
+                        CompanyId = company?.Id
                     }
                 ).ToList();
             return result;
