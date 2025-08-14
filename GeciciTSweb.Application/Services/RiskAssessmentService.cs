@@ -19,14 +19,36 @@ namespace GeciciTSweb.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<RiskAssessmentDto?> GetByMaintenanceRequestAndDepartmentAsync(int maintenanceRequestId, DepartmentCode departmentCode)
+        public async Task<RiskAssessmentDto?> GetByMaintenanceRequestAndDepartmentAsync(
+        int maintenanceRequestId, DepartmentCode departmentCode)
         {
             var riskAssessment = await _context.RiskAssessments
-                .FirstOrDefaultAsync(r => r.MaintenanceRequestId == maintenanceRequestId && 
-                                         r.DepartmentCode == (int)departmentCode);
+                .FirstOrDefaultAsync(r =>
+                    r.MaintenanceRequestId == maintenanceRequestId &&
+                    r.DepartmentCode == (int)departmentCode);
 
             return riskAssessment != null ? _mapper.Map<RiskAssessmentDto>(riskAssessment) : null;
         }
+
+        public async Task<List<RiskAssessmentDto>> GetByMaintenanceRequestAsync(int maintenanceRequestId)
+        {
+            var riskAssessments = await _context.RiskAssessments
+                .Where(r => r.MaintenanceRequestId == maintenanceRequestId && !r.IsDeleted)
+                .ToListAsync();
+
+            return _mapper.Map<List<RiskAssessmentDto>>(riskAssessments);
+        }
+        public async Task<List<RiskAssessmentDto>> GetAllAsync()
+        {
+            var riskAssessments = await _context.RiskAssessments
+                .Where(r => !r.IsDeleted)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+
+            return _mapper.Map<List<RiskAssessmentDto>>(riskAssessments);
+        }
+
+
 
         public async Task<RiskAssessmentDto> CreateAsync(CreateRiskAssessmentDto dto)
         {
@@ -172,7 +194,7 @@ namespace GeciciTSweb.Application.Services
             // Update MaintenanceRequest status
             await UpdateMaintenanceRequestStatusAsync(riskAssessment.MaintenanceRequestId);
         }
-
+        //ilgili talebi bulur, yeni duruma göre deðiþmiþse ekleme yapar.
         public async Task UpdateMaintenanceRequestStatusAsync(int maintenanceRequestId)
         {
             var maintenanceRequest = await _context.MaintenanceRequests.FindAsync(maintenanceRequestId);

@@ -15,7 +15,7 @@ namespace GeciciTSweb.Infrastructure.Data
             var optionsBuilder = new DbContextOptionsBuilder<GeciciTSwebDbContext>();
 
             // Buraya kendi connection string'ini yaz
-            optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=GeciciTamir;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=DESKTOP-K923N4L\\SQLEXPRESS;Database=GeciciTamir;Trusted_Connection=True;TrustServerCertificate=True;");
 
             return new GeciciTSwebDbContext(optionsBuilder.Options);
         }
