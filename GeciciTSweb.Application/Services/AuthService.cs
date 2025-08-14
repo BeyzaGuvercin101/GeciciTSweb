@@ -51,6 +51,13 @@ namespace GeciciTSweb.Application.Services
 
         public async Task<RegisterResponse> Register(RegisterRequest request)
         {
+            var data = await _unitOfWork.Users.FirstOrDefaultAsync(c => c.Username == request.Username);
+
+            if (data != null)
+            {
+                throw new InvalidOperationException($"User already exists!");
+            }
+
             var entity = _mapper.Map<User>(request);
 
             //Parolayı hashle 

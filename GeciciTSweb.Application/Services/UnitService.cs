@@ -54,8 +54,8 @@ namespace GeciciTSweb.Application.Services
                     join consoles in await _unitOfWork.Consoles.GetAllAsync() 
                     on units.ConsoleId equals consoles.Id into consolesJoin
                     from consoles in consolesJoin.DefaultIfEmpty()
-                    join company in await _unitOfWork.Companies.GetAllAsync() 
-                    on consoles.CompanyId equals company.Id into companiesJoin
+                    join company in await _unitOfWork.Companies.GetAllAsync()
+                    on consoles != null ? consoles.CompanyId : (int?)null equals company.Id into companiesJoin
                     from company in companiesJoin.DefaultIfEmpty()
                     where !units.IsDeleted && units.ConsoleId == consoleId
                     select new UnitListDto
