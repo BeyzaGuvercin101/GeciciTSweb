@@ -20,17 +20,14 @@ namespace GeciciTSweb.API.Controllers
         /// Get risk assessment by maintenance request and department
         /// </summary>
         [HttpGet]
-        public async Task<ActionResult<RiskAssessmentDto>> GetByMaintenanceRequestAndDepartment(
-            [FromQuery] int requestId,
-            [FromQuery] int department)
+        public async Task<ActionResult<RiskAssessmentDto>> GetByMaintenanceRequestAndDepartment([FromQuery] int requestId, [FromQuery] int department)
         {
             if (!Enum.IsDefined(typeof(DepartmentCode), department))
             {
                 return BadRequest("Invalid department code");
             }
 
-            var result = await _riskAssessmentService.GetByMaintenanceRequestAndDepartmentAsync(
-                requestId, (DepartmentCode)department);
+            var result = await _riskAssessmentService.GetByMaintenanceRequestAndDepartmentAsync(requestId, (DepartmentCode)department);
 
             if (result == null)
             {

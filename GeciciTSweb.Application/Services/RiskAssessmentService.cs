@@ -19,8 +19,7 @@ namespace GeciciTSweb.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<RiskAssessmentDto?> GetByMaintenanceRequestAndDepartmentAsync(
-        int maintenanceRequestId, DepartmentCode departmentCode)
+        public async Task<RiskAssessmentDto?> GetByMaintenanceRequestAndDepartmentAsync(int maintenanceRequestId, DepartmentCode departmentCode)
         {
             var riskAssessment = await _context.RiskAssessments
                 .FirstOrDefaultAsync(r =>

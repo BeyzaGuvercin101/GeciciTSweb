@@ -37,6 +37,6 @@ namespace GeciciTSweb.Application.DTOs
         public string? OperationalRiskNote { get; set; }
 
         [Required]
-        public int CreatedByUserId { get; set; }
+        public int UserId { get; set; }
     }
 }
