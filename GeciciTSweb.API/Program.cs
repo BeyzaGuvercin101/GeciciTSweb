@@ -10,6 +10,12 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
+// Render, ngrok veya başka bilgisayar bağlantısı için dış IP’den dinleme
+builder.WebHost.UseUrls("http://0.0.0.0:5277", "https://0.0.0.0:7039");
+
+
 // Database Context
 builder.Services.AddDbContext<GeciciTSwebDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -27,7 +33,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // Frontend URL'in
+        policy.AllowAnyOrigin() 
               .AllowAnyHeader()
               .AllowAnyMethod();
     });

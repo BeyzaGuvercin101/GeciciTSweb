@@ -1,3 +1,4 @@
+using GeciciTSweb.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace GeciciTSweb.Application.DTOs
@@ -6,6 +7,8 @@ namespace GeciciTSweb.Application.DTOs
     {
         [MaxLength(50)]
         public string? RiskCategoryCode { get; set; }
+
+        public int? DepartmentCode { get; set; }
 
         public DateTime? PlannedTemporaryRepairDate { get; set; }
 

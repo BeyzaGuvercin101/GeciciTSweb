@@ -24,8 +24,9 @@ namespace GeciciTSweb.Application.Mapper
             
             CreateMap<CreateRiskAssessmentDto, RiskAssessment>();
             CreateMap<UpdateRiskAssessmentDto, RiskAssessment>()
+                .ForMember(dest => dest.DepartmentCode, opt => opt.MapFrom(src => (int)src.DepartmentCode))
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
-
+            
             // Unit
             CreateMap<Unit, UnitListDto>()
                 .ForMember(dest => dest.ConsoleName, opt => opt.MapFrom(src => src.Console != null ? src.Console.Name : string.Empty))
