@@ -8,7 +8,7 @@ namespace GeciciTSweb.Application.DTOs
         [MaxLength(50)]
         public string? RiskCategoryCode { get; set; }
 
-        public int? DepartmentCode { get; set; }
+        public int DepartmentCode { get; set; }
 
         public DateTime? PlannedTemporaryRepairDate { get; set; }
 

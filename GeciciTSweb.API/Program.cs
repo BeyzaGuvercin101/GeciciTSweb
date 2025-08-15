@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 // Render, ngrok veya başka bilgisayar bağlantısı için dış IP’den dinleme
-builder.WebHost.UseUrls("http://0.0.0.0:5277", "https://0.0.0.0:7039");
+builder.WebHost.UseUrls("http://0.0.0.0:5277", "http://0.0.0.0:7039");
 
 
 // Database Context
@@ -33,7 +33,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.AllowAnyOrigin() 
+        policy.WithOrigins("http://localhost:3000", "http://localhost:7039","http://localhost:5277","http://172.20.10.8:3000/")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
