@@ -22,6 +22,17 @@ builder.Services
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
+// CORS Policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // Frontend URL'in
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // Repository Pattern
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -73,6 +84,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// CORS'u Authorization'dan önce ekle
+app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 
