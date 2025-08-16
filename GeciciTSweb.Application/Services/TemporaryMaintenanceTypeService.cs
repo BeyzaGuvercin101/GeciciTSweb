@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using GeciciTSweb.Application.DTOs;
 using GeciciTSweb.Application.Interfaces;
 using GeciciTSweb.Infrastructure.Interfaces;
 using GeciciTSweb.Infrastructure.Entities;
-using Microsoft.EntityFrameworkCore;
+using GeciciTSweb.Application.Caching;
 
 namespace GeciciTSweb.Application.Services
 {
@@ -16,17 +11,33 @@ namespace GeciciTSweb.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ICacheManager _memoryCache;
+        private readonly string maintenanceTypeCacheName = "maintenance-type";
 
-        public TemporaryMaintenanceTypeService(IUnitOfWork unitOfWork, IMapper mapper)
+        public TemporaryMaintenanceTypeService(IUnitOfWork unitOfWork, IMapper mapper, ICacheManager memoryCache)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _memoryCache = memoryCache;
         }
 
         public async Task<List<TemporaryMaintenanceTypeListDto>> GetAllAsync()
         {
-            var types = await _unitOfWork.TemporaryMaintenanceTypes.FindAsync(x => !x.IsDeleted);
-            return _mapper.Map<List<TemporaryMaintenanceTypeListDto>>(types);
+            // Cache'de varsa okuyorum
+            var data = _memoryCache.Get<List<TemporaryMaintenanceTypeListDto>>(maintenanceTypeCacheName);
+
+            if (data == null) 
+            {
+                //Cache'de yoksa, veritabanından kayıtları alıyorum
+                var types = await _unitOfWork.TemporaryMaintenanceTypes.FindAsync(x => !x.IsDeleted);
+                
+                data = _mapper.Map<List<TemporaryMaintenanceTypeListDto>>(types);
+
+                //Veritabanından aldığım kayıtları cache'e yazıyorum
+                _memoryCache.Add(maintenanceTypeCacheName, data);
+            }
+            
+            return data;
         }
 
         public async Task<TemporaryMaintenanceTypeListDto> GetByIdAsync(int id)
@@ -42,6 +53,8 @@ namespace GeciciTSweb.Application.Services
 
         public async Task<int> CreateAsync(CreateTemporaryMaintenanceTypeDto dto)
         {
+            // Veritabanı ve cache arasındaki veri bütünlüğünü korumak için cache'i temizliyorum
+            _memoryCache.Remove(maintenanceTypeCacheName);
             var entity = _mapper.Map<TemporaryMaintenanceType>(dto);
             await _unitOfWork.TemporaryMaintenanceTypes.AddAsync(entity);
             await _unitOfWork.SaveChangesAsync();

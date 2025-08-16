@@ -7,6 +7,8 @@ using GeciciTSweb.Infrastructure.Data;
 using GeciciTSweb.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using GeciciTSweb.Application.Caching;
+using GeciciTSweb.Application.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +55,11 @@ builder.Services.AddScoped<IMaintenanceRequestService, MaintenanceRequestService
 builder.Services.AddScoped<IMaintenanceRequestSummaryService, MaintenanceRequestSummaryService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICacheManager, MemoryCacheHelper>();
+
+
+//Memory cache
+builder.Services.AddMemoryCache();
 
 // AutoMapper
 builder.Services.AddAutoMapper(cfg =>

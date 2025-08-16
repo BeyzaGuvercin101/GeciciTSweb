@@ -13,6 +13,8 @@ namespace GeciciTSweb.Application.Helpers
 
         public static string HashPassword(string password)
         {
+            // BCrypt kütüphanesi zaten kullanmış olduğum EnhancedHashPassword metodu içerisinde saltlama işlemi yapıyor.
+            // HashPassword(inputKey, GenerateSalt(workFactor), enhancedEntropy: true, hashType)
             return BCrypt.Net.BCrypt.EnhancedHashPassword(password, HashType.SHA512);
         }   
 
