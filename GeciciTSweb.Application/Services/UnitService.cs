@@ -50,26 +50,28 @@ namespace GeciciTSweb.Application.Services
         public async Task<List<UnitListDto>> GetByConsoleIdAsync(int consoleId)
         {
             var result = (
-                    from units in await _unitOfWork.Units.GetAllAsync()
-                    join consoles in await _unitOfWork.Consoles.GetAllAsync() 
+                from units in await _unitOfWork.Units.GetAllAsync()
+                join consoles in await _unitOfWork.Consoles.GetAllAsync()
                     on units.ConsoleId equals consoles.Id into consolesJoin
-                    from consoles in consolesJoin.DefaultIfEmpty()
-                    join company in await _unitOfWork.Companies.GetAllAsync()
+                from consoles in consolesJoin.DefaultIfEmpty()
+                join company in await _unitOfWork.Companies.GetAllAsync()
                     on consoles != null ? consoles.CompanyId : (int?)null equals company.Id into companiesJoin
-                    from company in companiesJoin.DefaultIfEmpty()
-                    where !units.IsDeleted && units.ConsoleId == consoleId
-                    select new UnitListDto
-                    {
-                        Id = units.Id,
-                        Name = units.Name,
-                        ConsoleId = consoles.Id,
-                        ConsoleName = consoles.Name,
-                        CompanyName = company.Name,
-                        CompanyId = company?.Id
-                    }
-                ).ToList();
+                from company in companiesJoin.DefaultIfEmpty()
+                where !units.IsDeleted && units.ConsoleId == consoleId
+                select new UnitListDto
+                {
+                    Id = units.Id,
+                    Name = units.Name,
+                    ConsoleId = consoles?.Id,
+                    ConsoleName = consoles?.Name ?? string.Empty,
+                    CompanyId = company?.Id,
+                    CompanyName = company?.Name ?? string.Empty
+                }
+            ).ToList();
+
             return result;
         }
+
 
         public async Task<UnitListDto> GetByIdAsync(int id)
         {
@@ -96,6 +98,16 @@ namespace GeciciTSweb.Application.Services
             await _unitOfWork.SaveChangesAsync();
             return true;
         }
+
+
+
+
+
+
+
+
+
+
     }
 }
 

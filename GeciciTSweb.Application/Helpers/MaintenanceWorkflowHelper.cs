@@ -14,6 +14,13 @@ namespace GeciciTSweb.Application.Helpers
         {
             return status == MaintenanceWorkflowStatus.Onaylandi || status == MaintenanceWorkflowStatus.IptalEdildi;
         }
+
+        public static bool IsOpen(MaintenanceWorkflowStatus status)
+        {
+            return !IsClosed(status);
+        }
+
+
     }
 }
 
